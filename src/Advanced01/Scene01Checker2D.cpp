@@ -21,7 +21,8 @@ GLuint Scene01Checker2D::s_VAO = 0;
 
 void Scene01Checker2D::Init() { ReloadShaders(); }
 
-void Scene01Checker2D::ReloadShaders() {
+void Scene01Checker2D::ReloadShaders()
+{
   if (s_pShader)
     delete s_pShader;
   s_pShader = new GLSLProgramObject();
@@ -34,10 +35,11 @@ void Scene01Checker2D::ReloadShaders() {
   s_pShader->attachShaderSourceFile(finder.find(s_VertexShaderFilename).c_str(),
                                     GL_VERTEX_SHADER_ARB);
   s_pShader->attachShaderSourceFile(
-  finder.find(s_FragmentShaderFilename).c_str(), GL_FRAGMENT_SHADER_ARB);
+      finder.find(s_FragmentShaderFilename).c_str(), GL_FRAGMENT_SHADER_ARB);
   s_pShader->link();
 
-  if (!s_pShader->linkSucceeded()) {
+  if (!s_pShader->linkSucceeded())
+  {
     cerr << __FUNCTION__ << ": shader link failed" << endl;
     s_pShader->printProgramLog();
     return;
@@ -45,8 +47,8 @@ void Scene01Checker2D::ReloadShaders() {
 
   // build a screen-sized quad
 
-  float quadVertices[] = { -1, -1, 1, -1, 1, 1, -1, -1, 1, 1, -1, 1};
-  float quadTexCoords[] = { 0,  0, 1,  0, 1, 1,  0,  0, 1, 1,  0, 1};
+  float quadVertices[] = {-1, -1, 1, -1, 1, 1, -1, -1, 1, 1, -1, 1};
+  float quadTexCoords[] = {0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1};
 
   if (!s_VAO)
     glGenVertexArrays(1, &s_VAO);
@@ -75,7 +77,8 @@ void Scene01Checker2D::ReloadShaders() {
   glBindVertexArray(0);
 }
 
-void Scene01Checker2D::Draw() {
+void Scene01Checker2D::Draw()
+{
   if (!s_pShader || !s_pShader->linkSucceeded())
     return;
 
@@ -84,12 +87,12 @@ void Scene01Checker2D::Draw() {
 
   s_pShader->use();
   // TODO: uncomment these lines
-  // s_pShader->sendUniform4f("checkerColor0", s_CheckerColor0.x,
-  // s_CheckerColor0.y, s_CheckerColor0.z, s_CheckerColor0.w);
-  // s_pShader->sendUniform4f("checkerColor1", s_CheckerColor1.x,
-  // s_CheckerColor1.y, s_CheckerColor1.z, s_CheckerColor1.w);
-  // s_pShader->sendUniform2f("checkerScale", s_CheckerScale.x,
-  // s_CheckerScale.y);
+  s_pShader->sendUniform4f("checkerColor0", s_CheckerColor0.x,
+                           s_CheckerColor0.y, s_CheckerColor0.z, s_CheckerColor0.w);
+  s_pShader->sendUniform4f("checkerColor1", s_CheckerColor1.x,
+                           s_CheckerColor1.y, s_CheckerColor1.z, s_CheckerColor1.w);
+  s_pShader->sendUniform2f("checkerScale", s_CheckerScale.x,
+                           s_CheckerScale.y);
 
   glBindVertexArray(s_VAO);
   glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -100,11 +103,13 @@ void Scene01Checker2D::Draw() {
   glPopAttrib();
 }
 
-void Scene01Checker2D::Resize(GLFWwindow *window, int w, int h) {
+void Scene01Checker2D::Resize(GLFWwindow *window, int w, int h)
+{
   AbstractScene::Resize(window, w, h);
 }
 
-void Scene01Checker2D::ImGui() {
+void Scene01Checker2D::ImGui()
+{
   ImGui::Text("Scene01Checker2D Menu:");
 
   ImGui::ColorEdit3("Checker Color #0", (float *)&s_CheckerColor0.x);
@@ -113,12 +118,14 @@ void Scene01Checker2D::ImGui() {
   ImGui::SliderFloat("Horizontal Scale", &s_CheckerScale.x, 0.05f, 1.0f);
   ImGui::SliderFloat("Vertical Scale", &s_CheckerScale.y, 0.05f, 1.0f);
 
-  if (ImGui::Button("Reload Shaders")) {
+  if (ImGui::Button("Reload Shaders"))
+  {
     ReloadShaders();
   }
 }
 
-void Scene01Checker2D::Destroy() {
+void Scene01Checker2D::Destroy()
+{
   if (s_pShader)
     delete s_pShader;
   if (s_VAO)
