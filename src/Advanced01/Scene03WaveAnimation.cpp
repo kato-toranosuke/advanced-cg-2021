@@ -7,11 +7,11 @@ using namespace std;
 
 string Scene03WaveAnimation::s_VertexShaderFilename = "scene03_wave_animation.vert";
 string Scene03WaveAnimation::s_FragmentShaderFilename = "scene03_wave_animation.frag";
-GLSLProgramObject* Scene03WaveAnimation::s_pShader = 0;
+GLSLProgramObject *Scene03WaveAnimation::s_pShader = 0;
 
 int Scene03WaveAnimation::s_NumQuadLineVertices = 0;
 
-glm::vec2 Scene03WaveAnimation::s_PrevMouse = glm::vec2(0,0);
+glm::vec2 Scene03WaveAnimation::s_PrevMouse = glm::vec2(0, 0);
 ArcballCamera Scene03WaveAnimation::s_Camera(glm::vec3(2.f), glm::vec3(0.f), glm::vec3(0, 1, 0));
 
 GLuint Scene03WaveAnimation::s_VBO = 0;
@@ -24,7 +24,8 @@ void Scene03WaveAnimation::Init()
 
 void Scene03WaveAnimation::ReloadShaders()
 {
-	if (s_pShader) delete s_pShader;
+	if (s_pShader)
+		delete s_pShader;
 	s_pShader = new GLSLProgramObject();
 
 	PathFinder finder;
@@ -74,16 +75,18 @@ void Scene03WaveAnimation::ReloadShaders()
 		}
 	}
 
-	if (!s_VAO) glGenVertexArrays(1, &s_VAO);
+	if (!s_VAO)
+		glGenVertexArrays(1, &s_VAO);
 	glBindVertexArray(s_VAO);
 
-	if (!s_VBO) glGenBuffers(1, &s_VBO);
+	if (!s_VBO)
+		glGenBuffers(1, &s_VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, s_VBO);
 
 	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * quads.size(), &quads[0].x, GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(s_pShader->getAttributeLocation("vertexPosition"));
-	glVertexAttribPointer(s_pShader->getAttributeLocation("vertexPosition"), 3, GL_FLOAT, GL_FALSE, 0, (const void*)0); // vertices
+	glVertexAttribPointer(s_pShader->getAttributeLocation("vertexPosition"), 3, GL_FLOAT, GL_FALSE, 0, (const void *)0); // vertices
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
@@ -104,8 +107,8 @@ void Scene03WaveAnimation::Draw()
 	s_pShader->use();
 	s_pShader->sendUniformMatrix4fv("projModelViewMatrix", glm::value_ptr(projModelViewMatrix));
 	// TODO: uncomment these lines
-	//s_pShader->sendUniform1f("temporalSignal", ImGui::GetTime() / 5.f);
-	//s_pShader->sendUniform4f("lineColor", 1, 1, 1, 1);
+	s_pShader->sendUniform1f("temporalSignal", ImGui::GetTime() / 5.f);
+	s_pShader->sendUniform4f("lineColor", 1, 1, 1, 1);
 
 	glBindVertexArray(s_VAO);
 	glDrawArrays(GL_LINES, 0, s_NumQuadLineVertices);
@@ -114,11 +117,11 @@ void Scene03WaveAnimation::Draw()
 	s_pShader->disable();
 }
 
-void Scene03WaveAnimation::Cursor(GLFWwindow* window, double xpos, double ypos)
+void Scene03WaveAnimation::Cursor(GLFWwindow *window, double xpos, double ypos)
 {
 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE &&
-		glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_RELEASE &&
-		glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE)
+			glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_RELEASE &&
+			glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE)
 	{
 		return;
 	}
@@ -141,7 +144,7 @@ void Scene03WaveAnimation::Cursor(GLFWwindow* window, double xpos, double ypos)
 	s_PrevMouse = currPos;
 }
 
-void Scene03WaveAnimation::Mouse(GLFWwindow* window, int button, int action, int mods)
+void Scene03WaveAnimation::Mouse(GLFWwindow *window, int button, int action, int mods)
 {
 	if (action == GLFW_PRESS)
 	{
@@ -151,7 +154,7 @@ void Scene03WaveAnimation::Mouse(GLFWwindow* window, int button, int action, int
 	}
 }
 
-void Scene03WaveAnimation::Resize(GLFWwindow* window, int w, int h)
+void Scene03WaveAnimation::Resize(GLFWwindow *window, int w, int h)
 {
 	AbstractScene::Resize(window, w, h);
 }
@@ -168,7 +171,10 @@ void Scene03WaveAnimation::ImGui()
 
 void Scene03WaveAnimation::Destroy()
 {
-	if (s_pShader) delete s_pShader;
-	if (s_VAO) glDeleteVertexArrays(1, &s_VAO);
-	if (s_VBO) glDeleteBuffers(1, &s_VBO);
+	if (s_pShader)
+		delete s_pShader;
+	if (s_VAO)
+		glDeleteVertexArrays(1, &s_VAO);
+	if (s_VBO)
+		glDeleteBuffers(1, &s_VBO);
 }
