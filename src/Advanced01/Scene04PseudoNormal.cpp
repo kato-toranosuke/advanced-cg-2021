@@ -7,14 +7,14 @@ using namespace std;
 
 string Scene04PseudoNormal::s_VertexShaderFilename = "scene04_pseudo_normal.vert";
 string Scene04PseudoNormal::s_FragmentShaderFilename = "scene04_pseudo_normal.frag";
-GLSLProgramObject* Scene04PseudoNormal::s_pShader = 0;
+GLSLProgramObject *Scene04PseudoNormal::s_pShader = 0;
 
 bool Scene04PseudoNormal::s_RenderWireframe = false;
 int Scene04PseudoNormal::s_RenderType = Render_Pseudo_Normal;
 
 TriMesh Scene04PseudoNormal::s_TriMesh;
 
-glm::vec2 Scene04PseudoNormal::s_PrevMouse = glm::vec2(0,0);
+glm::vec2 Scene04PseudoNormal::s_PrevMouse = glm::vec2(0, 0);
 ArcballCamera Scene04PseudoNormal::s_Camera(glm::vec3(2.f), glm::vec3(0.f), glm::vec3(0, 1, 0));
 
 GLuint Scene04PseudoNormal::s_VAO = 0;
@@ -34,7 +34,8 @@ void Scene04PseudoNormal::Init()
 
 void Scene04PseudoNormal::ReloadShaders()
 {
-	if (s_pShader) delete s_pShader;
+	if (s_pShader)
+		delete s_pShader;
 	s_pShader = new GLSLProgramObject();
 
 	PathFinder finder;
@@ -60,16 +61,17 @@ void Scene04PseudoNormal::ReloadShaders()
 		return;
 	}
 
-	if (!s_VAO) glGenVertexArrays(1, &s_VAO);
+	if (!s_VAO)
+		glGenVertexArrays(1, &s_VAO);
 	glBindVertexArray(s_VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, s_TriMesh.getVertexVBO());
 	glEnableVertexAttribArray(s_pShader->getAttributeLocation("vertexPosition"));
-	glVertexAttribPointer(s_pShader->getAttributeLocation("vertexPosition"), 3, GL_FLOAT, GL_FALSE, 0, (const void*)0); // vertices
+	glVertexAttribPointer(s_pShader->getAttributeLocation("vertexPosition"), 3, GL_FLOAT, GL_FALSE, 0, (const void *)0); // vertices
 
 	glBindBuffer(GL_ARRAY_BUFFER, s_TriMesh.getVertexNormalVBO());
 	glEnableVertexAttribArray(s_pShader->getAttributeLocation("vertexNormal"));
-	glVertexAttribPointer(s_pShader->getAttributeLocation("vertexNormal"), 3, GL_FLOAT, GL_FALSE, 0, (const void*)0); // vertices
+	glVertexAttribPointer(s_pShader->getAttributeLocation("vertexNormal"), 3, GL_FLOAT, GL_FALSE, 0, (const void *)0); // vertices
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -104,7 +106,7 @@ void Scene04PseudoNormal::Draw()
 		s_pShader->sendUniformMatrix4fv("modelViewMatrix", glm::value_ptr(modelViewMatrix));
 		s_pShader->sendUniformMatrix4fv("projMatrix", glm::value_ptr(projMatrix));
 		// TODO: uncomment these lines
-		//s_pShader->sendUniformMatrix3fv("modelViewInvTransposed", glm::value_ptr(modelViewInvTransposed));
+		s_pShader->sendUniformMatrix3fv("modelViewInvTransposed", glm::value_ptr(modelViewInvTransposed));
 
 		glBindVertexArray(s_VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 3 * s_TriMesh.getNumTriangles());
@@ -126,11 +128,11 @@ void Scene04PseudoNormal::Draw()
 	glPopAttrib();
 }
 
-void Scene04PseudoNormal::Cursor(GLFWwindow* window, double xpos, double ypos)
+void Scene04PseudoNormal::Cursor(GLFWwindow *window, double xpos, double ypos)
 {
 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE &&
-		glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_RELEASE &&
-		glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE)
+			glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_RELEASE &&
+			glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE)
 	{
 		return;
 	}
@@ -153,7 +155,7 @@ void Scene04PseudoNormal::Cursor(GLFWwindow* window, double xpos, double ypos)
 	s_PrevMouse = currPos;
 }
 
-void Scene04PseudoNormal::Mouse(GLFWwindow* window, int button, int action, int mods)
+void Scene04PseudoNormal::Mouse(GLFWwindow *window, int button, int action, int mods)
 {
 	if (action == GLFW_PRESS)
 	{
@@ -163,7 +165,7 @@ void Scene04PseudoNormal::Mouse(GLFWwindow* window, int button, int action, int 
 	}
 }
 
-void Scene04PseudoNormal::Resize(GLFWwindow* window, int w, int h)
+void Scene04PseudoNormal::Resize(GLFWwindow *window, int w, int h)
 {
 	AbstractScene::Resize(window, w, h);
 }
@@ -174,8 +176,8 @@ void Scene04PseudoNormal::ImGui()
 
 	ImGui::Checkbox("Wireframe", &s_RenderWireframe);
 
-	const char* renderTypes[] = { "(None)", "Texture", "Pseudo Normal" };
-	ImGui::ListBox("Render Type", &s_RenderType, renderTypes, sizeof(renderTypes)/sizeof(const char*));
+	const char *renderTypes[] = {"(None)", "Texture", "Pseudo Normal"};
+	ImGui::ListBox("Render Type", &s_RenderType, renderTypes, sizeof(renderTypes) / sizeof(const char *));
 
 	if (ImGui::Button("Reload Shaders"))
 	{
@@ -185,6 +187,8 @@ void Scene04PseudoNormal::ImGui()
 
 void Scene04PseudoNormal::Destroy()
 {
-	if (s_pShader) delete s_pShader;
-	if (s_VAO) glDeleteVertexArrays(1, &s_VAO);
+	if (s_pShader)
+		delete s_pShader;
+	if (s_VAO)
+		glDeleteVertexArrays(1, &s_VAO);
 }
