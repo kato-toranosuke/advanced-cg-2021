@@ -41,9 +41,13 @@ void Scene02ImageSmoothing::ReloadShaders()
 	finder.addSearchPath("../GLSL");
 	finder.addSearchPath("../../GLSL");
 
+	const GLuint vertexPositionLocation = 0;
+	const GLuint inTexCoordLocation = 1;
+
 	s_pShader->attachShaderSourceFile(finder.find(s_VertexShaderFilename).c_str(), GL_VERTEX_SHADER);
 	s_pShader->attachShaderSourceFile(finder.find(s_FragmentShaderFilename).c_str(), GL_FRAGMENT_SHADER);
-
+	s_pShader->setAttributeLocation("vertexPosition", vertexPositionLocation);
+	s_pShader->setAttributeLocation("inTexCoord", inTexCoordLocation);
 	s_pShader->link();
 
 	if (!s_pShader->linkSucceeded())
@@ -70,11 +74,11 @@ void Scene02ImageSmoothing::ReloadShaders()
 	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(quadVertices), quadVertices);
 	glBufferSubData(GL_ARRAY_BUFFER, sizeof(quadVertices), sizeof(quadTexCoords), quadTexCoords);
 
-	glEnableVertexAttribArray(s_pShader->getAttributeLocation("vertexPosition"));
-	glVertexAttribPointer(s_pShader->getAttributeLocation("vertexPosition"), 2, GL_FLOAT, GL_FALSE, 0, (const void *)0); // vertices
+	glEnableVertexAttribArray(vertexPositionLocation);
+	glVertexAttribPointer(vertexPositionLocation, 2, GL_FLOAT, GL_FALSE, 0, (const void *)0); // vertices
 
-	glEnableVertexAttribArray(s_pShader->getAttributeLocation("inTexCoord"));
-	glVertexAttribPointer(s_pShader->getAttributeLocation("inTexCoord"), 2, GL_FLOAT, GL_FALSE, 0, (const void *)sizeof(quadVertices)); // texture coordinates
+	glEnableVertexAttribArray(inTexCoordLocation);
+	glVertexAttribPointer(inTexCoordLocation, 2, GL_FLOAT, GL_FALSE, 0, (const void *)sizeof(quadVertices)); // texture coordinates
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);

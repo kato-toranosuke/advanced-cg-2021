@@ -50,7 +50,7 @@ public:
 	const GLuint getTexID() const { return m_TexID; }
 	const GLuint getVertexVBO() const { return m_VertexVBO; }
 	const GLuint getVertexNormalVBO() const { return m_VertexNormalVBO; }
-	const GLuint getTexCoordVBO() const { return m_VertexNormalVBO; }
+	const GLuint getTexCoordVBO() const { return m_TexCoordVBO; }
 
 	bool loadObj(const char* filename);
 	bool loadTexture(const char* filename);
