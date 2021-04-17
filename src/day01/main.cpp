@@ -53,6 +53,8 @@ SceneEntry g_SceneEntries[] = {
 const int g_NumSceneEntries = sizeof(g_SceneEntries) / sizeof(SceneEntry);
 int g_SceneIndex = 0;
 
+glm::mat4 g_ProjMatrix;
+
 // callbacks
 
 void errorCallback(int error, const char* description)
@@ -86,7 +88,11 @@ void keyboardCallback(GLFWwindow* window, int key, int scanCode, int action, int
 
 void resizeCallback(GLFWwindow* window, int w, int h)
 {
+	if (h < 1) h = 1;
 	g_SceneEntries[g_SceneIndex].Resize(window, w, h);
+
+	const float aspect = w / float(h);
+	g_ProjMatrix = glm::perspective(45.f, aspect, 0.01f, 100.f);
 }
 
 #include <glm/gtc/type_ptr.hpp>

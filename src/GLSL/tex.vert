@@ -1,13 +1,14 @@
 #version 150 core
 
 in vec4 vertexPosition;
+in vec2 inTexCoord;
 
-// TODO: uncomment these lines
-//uniform float temporalSignal;
+out vec2 vTexCoord;
+
 uniform mat4 projModelViewMatrix;
 
 void main()
 {
-	// TODO: write an appropriate code here
+	vTexCoord = inTexCoord;
 	gl_Position = projModelViewMatrix * vertexPosition;
 }

@@ -27,7 +27,7 @@ public:
 	static void Destroy();
 
 private:
-	static GLSLProgramObject* s_pShader;
+	static GLSLProgramObject* s_pTexShader, * s_pColorShader, * s_pShader;
 	static std::string s_VertexShaderFilename, s_FragmentShaderFilename;
 
 	static bool s_RenderWireframe;
@@ -38,5 +38,5 @@ private:
 	static glm::vec2 s_PrevMouse;
 	static ArcballCamera s_Camera;
 
-	static GLuint s_VAO;
+	static GLuint s_TexVAO, s_NormalVAO;
 };

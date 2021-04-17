@@ -15,10 +15,10 @@ public:
 		if (h == 0) h = 1;
 		glViewport(0, 0, w, h);
 		s_WindowWidth = w;
-		s_WIndowHeight = h;
+		s_WindowHeight = h;
 	}
 
 protected:
-	static int s_WindowWidth, s_WIndowHeight;
+	static int s_WindowWidth, s_WindowHeight;
 
 };

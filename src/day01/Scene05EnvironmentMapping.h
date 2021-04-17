@@ -20,7 +20,7 @@ public:
 	static void Destroy();
 
 private:
-	static GLSLProgramObject* s_pShader;
+	static GLSLProgramObject* s_pTexShader, * s_pShader;
 	static std::string s_VertexShaderFilename, s_FragmentShaderFilename;
 
 	static TriMesh s_TriMesh;
@@ -29,7 +29,7 @@ private:
 	static ArcballCamera s_Camera;
 
 	static int s_NumSkyDomeVertices;
-	static GLuint s_VAO, s_EnvMapTexID, s_SkyDomeVBO;
+	static GLuint s_VAO, s_EnvMapTexID, s_SkyDomeVAO;
 
 	static void BuildSkyDome();
 	static void RenderSkyDome();

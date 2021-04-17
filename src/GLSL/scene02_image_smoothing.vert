@@ -9,6 +9,4 @@ void main()
 {
 	// TODO: write an appropriate code here
 	gl_Position = vertexPosition;
-
-	outTexCoord = inTexCoord;
 }
