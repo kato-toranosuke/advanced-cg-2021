@@ -7,16 +7,9 @@
 #include "arcball_camera.h"
 #include "TriMesh.h"
 
-class Scene04PseudoNormal : public AbstractScene
+class Scene05EnvironmentMapping : public AbstractScene
 {
 public:
-	enum Render_Type
-	{
-		Render_None,
-		Render_Texture,
-		Render_Pseudo_Normal
-	};
-
 	static void Init();
 	static void ReloadShaders();
 	static void Draw();
@@ -27,16 +20,17 @@ public:
 	static void Destroy();
 
 private:
-	static GLSLProgramObject* s_pShader;
+	static GLSLProgramObject* s_pTexShader, * s_pShader;
 	static std::string s_VertexShaderFilename, s_FragmentShaderFilename;
-
-	static bool s_RenderWireframe;
-	static int s_RenderType;
 
 	static TriMesh s_TriMesh;
 
 	static glm::vec2 s_PrevMouse;
 	static ArcballCamera s_Camera;
 
-	static GLuint s_VAO;
+	static int s_NumSkyDomeVertices;
+	static GLuint s_VAO, s_EnvMapTexID, s_SkyDomeVAO;
+
+	static void BuildSkyDome();
+	static void RenderSkyDome();
 };

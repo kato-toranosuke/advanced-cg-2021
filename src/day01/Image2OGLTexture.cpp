@@ -31,7 +31,7 @@ bool Image2OGLTexture(const char* filename, GLuint& texID, int& width, int& heig
 	glTexParameteri(texTarget, GL_TEXTURE_WRAP_S, clampParam);
 	glTexParameteri(texTarget, GL_TEXTURE_WRAP_T, clampParam);
 	glTexImage2D(texTarget, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, ilGetData());
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);	// deprecated from OpenGL 3.0
 	glBindTexture(texTarget, 0);
 
 	ilDeleteImages(1, &imgName);

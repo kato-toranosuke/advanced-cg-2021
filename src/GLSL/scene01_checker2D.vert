@@ -8,5 +8,8 @@ out vec2 outTexCoord;
 void main()
 {
 	// TODO: write an appropriate code here
+	// gl_Positon: バーテックスシェーダの出力変数
 	gl_Position = vertexPosition;
+
+	outTexCoord = inTexCoord;
 }
