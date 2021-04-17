@@ -13,12 +13,12 @@ using namespace std;
 
 string Scene05EnvironmentMapping::s_VertexShaderFilename = "scene05_envmap.vert";
 string Scene05EnvironmentMapping::s_FragmentShaderFilename = "scene05_envmap.frag";
-GLSLProgramObject* Scene05EnvironmentMapping::s_pTexShader = 0;
-GLSLProgramObject* Scene05EnvironmentMapping::s_pShader = 0;
+GLSLProgramObject *Scene05EnvironmentMapping::s_pTexShader = 0;
+GLSLProgramObject *Scene05EnvironmentMapping::s_pShader = 0;
 
 TriMesh Scene05EnvironmentMapping::s_TriMesh;
 
-glm::vec2 Scene05EnvironmentMapping::s_PrevMouse = glm::vec2(0,0);
+glm::vec2 Scene05EnvironmentMapping::s_PrevMouse = glm::vec2(0, 0);
 ArcballCamera Scene05EnvironmentMapping::s_Camera(glm::vec3(2.f), glm::vec3(0.f), glm::vec3(0, 1, 0));
 
 int Scene05EnvironmentMapping::s_NumSkyDomeVertices = 0;
@@ -68,7 +68,8 @@ void Scene05EnvironmentMapping::ReloadShaders()
 	const GLuint inTexCoordLocation = 1;
 	const GLuint vertexNormalLocation = 1;
 
-	if (s_pTexShader) delete s_pTexShader;
+	if (s_pTexShader)
+		delete s_pTexShader;
 	s_pTexShader = new GLSLProgramObject();
 	s_pTexShader->attachShaderSourceFile(finder.find("tex.vert").c_str(), GL_VERTEX_SHADER);
 	s_pTexShader->attachShaderSourceFile(finder.find("tex.frag").c_str(), GL_FRAGMENT_SHADER);
@@ -83,7 +84,8 @@ void Scene05EnvironmentMapping::ReloadShaders()
 		return;
 	}
 
-	if (s_pShader) delete s_pShader;
+	if (s_pShader)
+		delete s_pShader;
 	s_pShader = new GLSLProgramObject();
 	s_pShader->attachShaderSourceFile(finder.find(s_VertexShaderFilename).c_str(), GL_VERTEX_SHADER);
 	s_pShader->attachShaderSourceFile(finder.find(s_FragmentShaderFilename).c_str(), GL_FRAGMENT_SHADER);
@@ -104,16 +106,17 @@ void Scene05EnvironmentMapping::ReloadShaders()
 		return;
 	}
 
-	if (!s_VAO) glGenVertexArrays(1, &s_VAO);
+	if (!s_VAO)
+		glGenVertexArrays(1, &s_VAO);
 	glBindVertexArray(s_VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, s_TriMesh.getVertexVBO());
 	glEnableVertexAttribArray(vertexPositionLocation);
-	glVertexAttribPointer(vertexPositionLocation, 3, GL_FLOAT, GL_FALSE, 0, (const void*)0);
+	glVertexAttribPointer(vertexPositionLocation, 3, GL_FLOAT, GL_FALSE, 0, (const void *)0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, s_TriMesh.getVertexNormalVBO());
 	glEnableVertexAttribArray(vertexNormalLocation);
-	glVertexAttribPointer(vertexNormalLocation, 3, GL_FLOAT, GL_FALSE, 0, (const void*)0);
+	glVertexAttribPointer(vertexNormalLocation, 3, GL_FLOAT, GL_FALSE, 0, (const void *)0);
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -132,7 +135,7 @@ void Scene05EnvironmentMapping::Draw()
 	auto modelViewMatrix = s_Camera.transform() * s_TriMesh.getModelMatrix();
 	//auto projModelViewMatrix = projMatrix * modelViewMatrix;
 	auto projModelViewMatrix = g_ProjMatrix * modelViewMatrix;
-	
+
 	{
 		//auto skyDomeMatrix = s_Camera.transform();
 		//skyDomeMatrix[3][0] = skyDomeMatrix[3][1] = skyDomeMatrix[3][2] = 0.f;
@@ -153,8 +156,8 @@ void Scene05EnvironmentMapping::Draw()
 	s_pShader->use();
 	s_pShader->sendUniformMatrix4fv("projModelViewMatrix", glm::value_ptr(projModelViewMatrix));
 	// TODO: uncomment these lines
-	//s_pShader->sendUniform3fv("eye", glm::value_ptr(eye));
-	//s_pShader->sendUniform1ui("envmap", 0);
+	s_pShader->sendUniform3fv("eye", glm::value_ptr(eye));
+	s_pShader->sendUniform1ui("envmap", 0);
 
 	glBindVertexArray(s_VAO);
 	glDrawArrays(GL_TRIANGLES, 0, 3 * s_TriMesh.getNumTriangles());
@@ -168,11 +171,11 @@ void Scene05EnvironmentMapping::Draw()
 	//glPopAttrib();	// deprecated from OpenGL 3.0
 }
 
-void Scene05EnvironmentMapping::Cursor(GLFWwindow* window, double xpos, double ypos)
+void Scene05EnvironmentMapping::Cursor(GLFWwindow *window, double xpos, double ypos)
 {
 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE &&
-		glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_RELEASE &&
-		glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE)
+			glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_RELEASE &&
+			glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE)
 	{
 		return;
 	}
@@ -195,7 +198,7 @@ void Scene05EnvironmentMapping::Cursor(GLFWwindow* window, double xpos, double y
 	s_PrevMouse = currPos;
 }
 
-void Scene05EnvironmentMapping::Mouse(GLFWwindow* window, int button, int action, int mods)
+void Scene05EnvironmentMapping::Mouse(GLFWwindow *window, int button, int action, int mods)
 {
 	if (action == GLFW_PRESS)
 	{
@@ -205,7 +208,7 @@ void Scene05EnvironmentMapping::Mouse(GLFWwindow* window, int button, int action
 	}
 }
 
-void Scene05EnvironmentMapping::Resize(GLFWwindow* window, int w, int h)
+void Scene05EnvironmentMapping::Resize(GLFWwindow *window, int w, int h)
 {
 	AbstractScene::Resize(window, w, h);
 }
@@ -222,10 +225,14 @@ void Scene05EnvironmentMapping::ImGui()
 
 void Scene05EnvironmentMapping::Destroy()
 {
-	if (s_pShader) delete s_pShader;
-	if (s_VAO) glDeleteVertexArrays(1, &s_VAO);
-	if (s_EnvMapTexID) glDeleteTextures(1, &s_EnvMapTexID);
-	if (s_SkyDomeVAO) glDeleteVertexArrays(1, &s_SkyDomeVAO);
+	if (s_pShader)
+		delete s_pShader;
+	if (s_VAO)
+		glDeleteVertexArrays(1, &s_VAO);
+	if (s_EnvMapTexID)
+		glDeleteTextures(1, &s_EnvMapTexID);
+	if (s_SkyDomeVAO)
+		glDeleteVertexArrays(1, &s_SkyDomeVAO);
 }
 
 void Scene05EnvironmentMapping::BuildSkyDome()
@@ -274,7 +281,8 @@ void Scene05EnvironmentMapping::BuildSkyDome()
 		radLatitude = lat1;
 	}
 
-	if (!s_SkyDomeVAO) glGenVertexArrays(1, &s_SkyDomeVAO);
+	if (!s_SkyDomeVAO)
+		glGenVertexArrays(1, &s_SkyDomeVAO);
 	glBindVertexArray(s_SkyDomeVAO);
 
 	GLuint skyDomeVBO;
@@ -289,10 +297,10 @@ void Scene05EnvironmentMapping::BuildSkyDome()
 	glBufferSubData(GL_ARRAY_BUFFER, vertexSize, texCoordSize, &texCoords[0].x);
 
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (const void*)0); // vertices
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (const void *)0); // vertices
 
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (const void*)vertexSize); // texture coordinates
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (const void *)vertexSize); // texture coordinates
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
