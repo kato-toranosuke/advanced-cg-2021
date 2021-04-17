@@ -12,11 +12,11 @@ using namespace std;
 
 string Scene05EnvironmentMapping::s_VertexShaderFilename = "scene05_envmap.vert";
 string Scene05EnvironmentMapping::s_FragmentShaderFilename = "scene05_envmap.frag";
-GLSLProgramObject* Scene05EnvironmentMapping::s_pShader = 0;
+GLSLProgramObject *Scene05EnvironmentMapping::s_pShader = 0;
 
 TriMesh Scene05EnvironmentMapping::s_TriMesh;
 
-glm::vec2 Scene05EnvironmentMapping::s_PrevMouse = glm::vec2(0,0);
+glm::vec2 Scene05EnvironmentMapping::s_PrevMouse = glm::vec2(0, 0);
 ArcballCamera Scene05EnvironmentMapping::s_Camera(glm::vec3(2.f), glm::vec3(0.f), glm::vec3(0, 1, 0));
 
 int Scene05EnvironmentMapping::s_NumSkyDomeVertices = 0;
@@ -47,7 +47,8 @@ void Scene05EnvironmentMapping::Init()
 
 void Scene05EnvironmentMapping::ReloadShaders()
 {
-	if (s_pShader) delete s_pShader;
+	if (s_pShader)
+		delete s_pShader;
 	s_pShader = new GLSLProgramObject();
 
 	PathFinder finder;
@@ -73,16 +74,17 @@ void Scene05EnvironmentMapping::ReloadShaders()
 		return;
 	}
 
-	if (!s_VAO) glGenVertexArrays(1, &s_VAO);
+	if (!s_VAO)
+		glGenVertexArrays(1, &s_VAO);
 	glBindVertexArray(s_VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, s_TriMesh.getVertexVBO());
 	glEnableVertexAttribArray(s_pShader->getAttributeLocation("vertexPosition"));
-	glVertexAttribPointer(s_pShader->getAttributeLocation("vertexPosition"), 3, GL_FLOAT, GL_FALSE, 0, (const void*)0); // vertices
+	glVertexAttribPointer(s_pShader->getAttributeLocation("vertexPosition"), 3, GL_FLOAT, GL_FALSE, 0, (const void *)0); // vertices
 
 	glBindBuffer(GL_ARRAY_BUFFER, s_TriMesh.getVertexNormalVBO());
 	glEnableVertexAttribArray(s_pShader->getAttributeLocation("vertexNormal"));
-	glVertexAttribPointer(s_pShader->getAttributeLocation("vertexNormal"), 3, GL_FLOAT, GL_FALSE, 0, (const void*)0); // vertices
+	glVertexAttribPointer(s_pShader->getAttributeLocation("vertexNormal"), 3, GL_FLOAT, GL_FALSE, 0, (const void *)0); // vertices
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -121,8 +123,8 @@ void Scene05EnvironmentMapping::Draw()
 	s_pShader->use();
 	s_pShader->sendUniformMatrix4fv("projModelViewMatrix", glm::value_ptr(projModelViewMatrix));
 	// TODO: uncomment these lines
-	//s_pShader->sendUniform3fv("eye", glm::value_ptr(eye));
-	//s_pShader->sendUniform1ui("envmap", 0);
+	s_pShader->sendUniform3fv("eye", glm::value_ptr(eye));
+	s_pShader->sendUniform1ui("envmap", 0);
 
 	glBindVertexArray(s_VAO);
 	glDrawArrays(GL_TRIANGLES, 0, 3 * s_TriMesh.getNumTriangles());
@@ -136,11 +138,11 @@ void Scene05EnvironmentMapping::Draw()
 	glPopAttrib();
 }
 
-void Scene05EnvironmentMapping::Cursor(GLFWwindow* window, double xpos, double ypos)
+void Scene05EnvironmentMapping::Cursor(GLFWwindow *window, double xpos, double ypos)
 {
 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE &&
-		glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_RELEASE &&
-		glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE)
+			glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_RELEASE &&
+			glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE)
 	{
 		return;
 	}
@@ -163,7 +165,7 @@ void Scene05EnvironmentMapping::Cursor(GLFWwindow* window, double xpos, double y
 	s_PrevMouse = currPos;
 }
 
-void Scene05EnvironmentMapping::Mouse(GLFWwindow* window, int button, int action, int mods)
+void Scene05EnvironmentMapping::Mouse(GLFWwindow *window, int button, int action, int mods)
 {
 	if (action == GLFW_PRESS)
 	{
@@ -173,7 +175,7 @@ void Scene05EnvironmentMapping::Mouse(GLFWwindow* window, int button, int action
 	}
 }
 
-void Scene05EnvironmentMapping::Resize(GLFWwindow* window, int w, int h)
+void Scene05EnvironmentMapping::Resize(GLFWwindow *window, int w, int h)
 {
 	AbstractScene::Resize(window, w, h);
 }
@@ -190,10 +192,14 @@ void Scene05EnvironmentMapping::ImGui()
 
 void Scene05EnvironmentMapping::Destroy()
 {
-	if (s_pShader) delete s_pShader;
-	if (s_VAO) glDeleteVertexArrays(1, &s_VAO);
-	if (s_EnvMapTexID) glDeleteTextures(1, &s_EnvMapTexID);
-	if (s_SkyDomeVBO) glDeleteBuffers(1, &s_SkyDomeVBO);
+	if (s_pShader)
+		delete s_pShader;
+	if (s_VAO)
+		glDeleteVertexArrays(1, &s_VAO);
+	if (s_EnvMapTexID)
+		glDeleteTextures(1, &s_EnvMapTexID);
+	if (s_SkyDomeVBO)
+		glDeleteBuffers(1, &s_SkyDomeVBO);
 }
 
 void Scene05EnvironmentMapping::BuildSkyDome()
@@ -238,7 +244,8 @@ void Scene05EnvironmentMapping::BuildSkyDome()
 		radLatitude = lat1;
 	}
 
-	if (!s_SkyDomeVBO) glGenBuffers(1, &s_SkyDomeVBO);
+	if (!s_SkyDomeVBO)
+		glGenBuffers(1, &s_SkyDomeVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, s_SkyDomeVBO);
 
 	size_t vertexSize = sizeof(glm::vec3) * vertices.size();
@@ -257,7 +264,7 @@ void Scene05EnvironmentMapping::RenderSkyDome()
 {
 	if (!s_SkyDomeVBO || !s_EnvMapTexID)
 	{
-		//cerr << __FUNCTION__ << ": vbo = " << s_SkyDomeVBO << ", tex ID = " << s_EnvMapTexID << endl;
+		cerr << __FUNCTION__ << ": vbo = " << s_SkyDomeVBO << ", tex ID = " << s_EnvMapTexID << endl;
 		return;
 	}
 
@@ -270,7 +277,7 @@ void Scene05EnvironmentMapping::RenderSkyDome()
 	glBindBuffer(GL_ARRAY_BUFFER, s_SkyDomeVBO);
 	glVertexPointer(3, GL_FLOAT, 0, 0);
 	glActiveTexture(GL_TEXTURE0);
-	glTexCoordPointer(2, GL_FLOAT, 0, (GLvoid*)(sizeof(glm::vec3) * s_NumSkyDomeVertices));
+	glTexCoordPointer(2, GL_FLOAT, 0, (GLvoid *)(sizeof(glm::vec3) * s_NumSkyDomeVertices));
 
 	glDrawArrays(GL_QUADS, 0, s_NumSkyDomeVertices);
 
