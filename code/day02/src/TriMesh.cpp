@@ -171,7 +171,12 @@ void TriMesh::calcVertexNormals()
 		}
 
 //#pragma omp for
-		for (int ni = 0; ni < nVerts; ni++) m_VertexNormals[ni] = glm::normalize(m_VertexNormals[ni]);
+		for (int ni = 0; ni < nVerts; ni++)
+		{
+			const float norm = glm::length(m_VertexNormals[ni]);
+			if (norm > 0.f)
+				m_VertexNormals[ni] = m_VertexNormals[ni] / norm;
+		}
 	}
 }
 
@@ -239,6 +244,12 @@ void TriMesh::renderMeshGeometry() const
 
 void TriMesh::renderWireframeMesh() const
 {
+	if (!m_VertexVBO || !m_VertexNormalVBO)
+	{
+		//cerr << __FUNCTION__ << ": vertex or normal VBO not ready" << endl;
+		return;
+	}
+
 	glEnable(GL_POLYGON_OFFSET_FILL);
 	glPolygonOffset(1, 1);
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
@@ -276,6 +287,7 @@ void TriMesh::calcModelMatrix()
 	const float scale = 1.f / radius;
 	const glm::vec3 trans = -scale * middle;
 
+#if 0
 	m_ModelMatrix[0][0] = m_ModelMatrix[1][1] = m_ModelMatrix[2][2] = scale;
 	m_ModelMatrix[1][0] = m_ModelMatrix[2][0] = 0.f;
 	m_ModelMatrix[0][1] = m_ModelMatrix[2][1] = 0.f;
@@ -285,6 +297,26 @@ void TriMesh::calcModelMatrix()
 	m_ModelMatrix[3][1] = trans.y;
 	m_ModelMatrix[3][2] = trans.z;
 	m_ModelMatrix[3][3] = 1.f;
+#else
+	m_ModelMatrix = glm::mat4(1.f);
+
+	glm::vec3 _bboxMin(1000000.f), _bboxMax(-1000000.f);
+
+	for (int i = 0; i < (int)m_Vertices.size(); ++i)
+	{
+		m_Vertices[i] = scale * m_Vertices[i] + trans;
+
+		const auto v = m_Vertices[i];
+		if (_bboxMin.x > v.x) _bboxMin.x = v.x;
+		if (_bboxMin.y > v.y) _bboxMin.y = v.y;
+		if (_bboxMin.z > v.z) _bboxMin.z = v.z;
+		if (_bboxMax.x < v.x) _bboxMax.x = v.x;
+		if (_bboxMax.y < v.y) _bboxMax.y = v.y;
+		if (_bboxMax.z < v.z) _bboxMax.z = v.z;
+	}
+
+	cerr << __FUNCTION__ << ": new bounding box: " << glm::to_string(_bboxMin) << "x" << glm::to_string(_bboxMax) << endl;
+#endif
 }
 
 void TriMesh::bakeVBOs()

@@ -41,6 +41,9 @@ public:
 	const int getNumVertices() const { return (int)m_Vertices.size(); }
 	const int getNumTriangles() const { return (int)m_TriangleIndices.size(); }
 
+	void setVertices(const std::vector<glm::vec3>& vertices) { m_Vertices = vertices; }
+	void setTriangles(const std::vector<TriangleIndices>& triangles) { m_TriangleIndices = triangles; }
+
 	const std::vector<glm::vec3>& getVertices() const { return m_Vertices; }
 	const std::vector<glm::vec3>& getVertexNormals() const { return m_VertexNormals; }
 	const std::vector<glm::vec2>& getTexCoords() const { return m_TexCoords; }
@@ -57,6 +60,8 @@ public:
 
 	void calcVertexNormals();
 
+	void bakeVBOs();
+
 	void renderTexturedMesh() const;
 	void renderMeshGeometry() const;
 	void renderWireframeMesh() const;
@@ -71,5 +76,4 @@ private:
 	GLuint m_TexID, m_VertexVBO, m_VertexNormalVBO, m_TexCoordVBO;
 
 	void calcModelMatrix();
-	void bakeVBOs();
 };
