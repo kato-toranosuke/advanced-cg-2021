@@ -11,7 +11,7 @@
 
 using namespace std;
 
-vector<GLSLProgramObject*> Scene01ShadingExamples::s_Shaders;
+vector<GLSLProgramObject *> Scene01ShadingExamples::s_Shaders;
 vector<string> Scene01ShadingExamples::s_VertexShaderFilenames;
 vector<string> Scene01ShadingExamples::s_FragmentShaderFilenames;
 
@@ -42,22 +42,21 @@ void Scene01ShadingExamples::ReloadShaders()
 	finder.addSearchPath("../../GLSL");
 
 	s_VertexShaderFilenames = {
-		"lambert.vert",
-		"phong.vert",
-		"blinn_phong.vert",
-		"cook_torrance.vert"
-	};
+			"lambert.vert",
+			"phong.vert",
+			"blinn_phong.vert",
+			"cook_torrance.vert"};
 	s_FragmentShaderFilenames = {
-		"lambert.frag",
-		"phong.frag",
-		"blinn_phong.frag",
-		"cook_torrance.frag"
-	};
+			"lambert.frag",
+			"phong.frag",
+			"blinn_phong.frag",
+			"cook_torrance.frag"};
 
 	const GLuint vertexPositionLocation = 0;
 	const GLuint vertexNormalLocation = 1;
 
-	for (auto p : s_Shaders) delete p;
+	for (auto p : s_Shaders)
+		delete p;
 	s_Shaders.clear();
 	s_Shaders.resize(Num_Shaders);
 
@@ -83,30 +82,32 @@ void Scene01ShadingExamples::ReloadShaders()
 		return;
 	}
 
-	if (!s_MeshVAO) glGenVertexArrays(1, &s_MeshVAO);
+	if (!s_MeshVAO)
+		glGenVertexArrays(1, &s_MeshVAO);
 	glBindVertexArray(s_MeshVAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, g_TriMesh.getVertexVBO());
 	glEnableVertexAttribArray(vertexPositionLocation);
-	glVertexAttribPointer(vertexPositionLocation, 3, GL_FLOAT, GL_FALSE, 0, (const void*)0);
+	glVertexAttribPointer(vertexPositionLocation, 3, GL_FLOAT, GL_FALSE, 0, (const void *)0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, g_TriMesh.getVertexNormalVBO());
 	glEnableVertexAttribArray(vertexNormalLocation);
-	glVertexAttribPointer(vertexNormalLocation, 3, GL_FLOAT, GL_FALSE, 0, (const void*)0);
+	glVertexAttribPointer(vertexNormalLocation, 3, GL_FLOAT, GL_FALSE, 0, (const void *)0);
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	if (!s_PlaneVAO) glGenVertexArrays(1, &s_PlaneVAO);
+	if (!s_PlaneVAO)
+		glGenVertexArrays(1, &s_PlaneVAO);
 	glBindVertexArray(s_PlaneVAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, g_Plane.getVertexVBO());
 	glEnableVertexAttribArray(vertexPositionLocation);
-	glVertexAttribPointer(vertexPositionLocation, 3, GL_FLOAT, GL_FALSE, 0, (const void*)0);
+	glVertexAttribPointer(vertexPositionLocation, 3, GL_FLOAT, GL_FALSE, 0, (const void *)0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, g_Plane.getVertexNormalVBO());
 	glEnableVertexAttribArray(vertexNormalLocation);
-	glVertexAttribPointer(vertexNormalLocation, 3, GL_FLOAT, GL_FALSE, 0, (const void*)0);
+	glVertexAttribPointer(vertexNormalLocation, 3, GL_FLOAT, GL_FALSE, 0, (const void *)0);
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -131,8 +132,8 @@ void Scene01ShadingExamples::Draw()
 	auto projModelViewMatrix = g_ProjMatrix * modelViewMatrix;
 	glm::mat3 modelViewInverseTransposed = glm::transpose(glm::inverse(glm::mat3(modelViewMatrix)));
 
-	auto& color = DirectionalLightManager::GetLightColors()[0];
-	auto& dir = DirectionalLightManager::GetLightDirs()[0];
+	auto &color = DirectionalLightManager::GetLightColors()[0];
+	auto &dir = DirectionalLightManager::GetLightDirs()[0];
 
 	const float cosPhi = cos(dir.x), sinPhi = sin(dir.x);
 	const float cosTheta = cos(dir.y), sinTheta = sin(dir.y);
@@ -167,20 +168,20 @@ void Scene01ShadingExamples::Draw()
 		pShader->sendUniformMatrix4fv("projMatrix", glm::value_ptr(g_ProjMatrix));
 		pShader->sendUniformMatrix4fv("modelViewMatrix", glm::value_ptr(modelViewMatrix));
 		// TODO: uncomment these lines
-		//pShader->sendUniformMatrix3fv("modelViewInverseTransposed", glm::value_ptr(modelViewInverseTransposed));
-		//pShader->sendUniform3fv("eLightDir", glm::value_ptr(eLightDir));
-		//pShader->sendUniform3fv("lightColor", glm::value_ptr(color));
-		//pShader->sendUniform1f("shininess", g_Material.shininess);
-		//pShader->sendUniform3fv("diffuseCoeff", glm::value_ptr(g_Material.diffuseCoeff));
-		//pShader->sendUniform3fv("ambient", glm::value_ptr(g_Material.ambient));
+		pShader->sendUniformMatrix3fv("modelViewInverseTransposed", glm::value_ptr(modelViewInverseTransposed));
+		pShader->sendUniform3fv("eLightDir", glm::value_ptr(eLightDir));
+		pShader->sendUniform3fv("lightColor", glm::value_ptr(color));
+		pShader->sendUniform1f("shininess", g_Material.shininess);
+		pShader->sendUniform3fv("diffuseCoeff", glm::value_ptr(g_Material.diffuseCoeff));
+		pShader->sendUniform3fv("ambient", glm::value_ptr(g_Material.ambient));
 
 		glBindVertexArray(s_MeshVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 3 * g_TriMesh.getNumTriangles());
 		glBindVertexArray(0);
 
 		// TODO: uncomment these lines
-		//pShader->sendUniformMatrix4fv("modelViewMatrix", glm::value_ptr(viewMatrix));
-		//pShader->sendUniformMatrix3fv("modelViewInverseTransposed", glm::value_ptr(glm::mat3(viewMatrix)));
+		pShader->sendUniformMatrix4fv("modelViewMatrix", glm::value_ptr(viewMatrix));
+		pShader->sendUniformMatrix3fv("modelViewInverseTransposed", glm::value_ptr(glm::mat3(viewMatrix)));
 
 		glBindVertexArray(s_PlaneVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 3 * g_Plane.getNumTriangles());
@@ -222,7 +223,7 @@ void Scene01ShadingExamples::Draw()
 	CheckGLError(__FUNCTION__, __FILE__, __LINE__);
 }
 
-void Scene01ShadingExamples::Resize(GLFWwindow* window, int w, int h)
+void Scene01ShadingExamples::Resize(GLFWwindow *window, int w, int h)
 {
 	AbstractScene::Resize(window, w, h);
 }
@@ -236,28 +237,28 @@ void Scene01ShadingExamples::ImGui()
 
 	bool lightUpdated = false;
 
-	lightUpdated |= ImGui::ColorEdit3("Light Color", (float*)& color.x);
+	lightUpdated |= ImGui::ColorEdit3("Light Color", (float *)&color.x);
 	lightUpdated |= ImGui::SliderFloat("Light Phi", &dir.x, 0.0, 2.f * glm::pi<float>());
 	lightUpdated |= ImGui::SliderFloat("Light Theta", &dir.y, 0.f, glm::pi<float>() / 2.25f);
 
 	if (lightUpdated)
 		DirectionalLightManager::UpdateLightVAO();
 
-	const char* reflectionModels[] = { "Lambert", "Phong", "Blinn-Phong", "Cook-Torrance" };
-	ImGui::ListBox("Reflection Model", &s_SelectedShaderIndex, reflectionModels, sizeof(reflectionModels) / sizeof(const char*));
+	const char *reflectionModels[] = {"Lambert", "Phong", "Blinn-Phong", "Cook-Torrance"};
+	ImGui::ListBox("Reflection Model", &s_SelectedShaderIndex, reflectionModels, sizeof(reflectionModels) / sizeof(const char *));
 
 	if (s_SelectedShaderIndex == Cook_Torrance_Shader || s_SelectedShaderIndex == Phong_Shader || s_SelectedShaderIndex == Blinn_Phong_Shader)
 	{
 		if (s_SelectedShaderIndex == Cook_Torrance_Shader)
 		{
-			ImGui::ColorEdit3("Fresnel 0", (float*)& g_Material.fresnel0.x);
+			ImGui::ColorEdit3("Fresnel 0", (float *)&g_Material.fresnel0.x);
 		}
 
 		ImGui::SliderFloat("Shininess", &g_Material.shininess, 0.001, 100.f);
 	}
 
-	ImGui::ColorEdit3("Diffuse Coeff", (float*)&g_Material.diffuseCoeff.x);
-	ImGui::ColorEdit3("Ambient Color", (float*)&g_Material.ambient.x);
+	ImGui::ColorEdit3("Diffuse Coeff", (float *)&g_Material.diffuseCoeff.x);
+	ImGui::ColorEdit3("Ambient Color", (float *)&g_Material.ambient.x);
 
 	if (ImGui::Button("Reload Shaders"))
 	{
@@ -267,8 +268,11 @@ void Scene01ShadingExamples::ImGui()
 
 void Scene01ShadingExamples::Destroy()
 {
-	for (auto p : s_Shaders) delete p;
+	for (auto p : s_Shaders)
+		delete p;
 	s_Shaders.clear();
-	if (s_MeshVAO) glDeleteVertexArrays(1, &s_MeshVAO);
-	if (s_PlaneVAO) glDeleteVertexArrays(1, &s_PlaneVAO);
+	if (s_MeshVAO)
+		glDeleteVertexArrays(1, &s_MeshVAO);
+	if (s_PlaneVAO)
+		glDeleteVertexArrays(1, &s_PlaneVAO);
 }
