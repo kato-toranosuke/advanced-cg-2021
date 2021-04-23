@@ -265,15 +265,15 @@ void Scene02ShadowMapping::Draw()
 		s_pSoftShadow2ndPassShader->sendUniformMatrix4fv("projMatrix", glm::value_ptr(g_ProjMatrix));
 		s_pSoftShadow2ndPassShader->sendUniformMatrix4fv("modelViewMatrix", glm::value_ptr(modelViewMatrix));
 		// TODO: uncomment these lines
-		//s_pSoftShadow2ndPassShader->sendUniformMatrix3fv("modelViewInverseTransposed", glm::value_ptr(modelViewInverseTransposed));
-		//s_pSoftShadow2ndPassShader->sendUniform1i("shadowTex", 0);
-		//s_pSoftShadow2ndPassShader->sendUniform2f("texMapScale", 1.f / float(s_ShadowTexSize), 1.f / float(s_ShadowTexSize));
-		//s_pSoftShadow2ndPassShader->sendUniformMatrix4fv("biasedShadowProjModelView", glm::value_ptr(biasMatrix * shadowProjModelView));
-		//s_pSoftShadow2ndPassShader->sendUniform3fv("eLightDir", glm::value_ptr(eLightDir));
-		//s_pSoftShadow2ndPassShader->sendUniform3fv("lightColor", glm::value_ptr(color));
-		//s_pSoftShadow2ndPassShader->sendUniform1f("shininess", g_Material.shininess);
-		//s_pSoftShadow2ndPassShader->sendUniform3fv("diffuseCoeff", glm::value_ptr(g_Material.diffuseCoeff));
-		//s_pSoftShadow2ndPassShader->sendUniform3fv("ambient", glm::value_ptr(g_Material.ambient));
+		s_pSoftShadow2ndPassShader->sendUniformMatrix3fv("modelViewInverseTransposed", glm::value_ptr(modelViewInverseTransposed));
+		s_pSoftShadow2ndPassShader->sendUniform1i("shadowTex", 0);
+		s_pSoftShadow2ndPassShader->sendUniform2f("texMapScale", 1.f / float(s_ShadowTexSize), 1.f / float(s_ShadowTexSize));
+		s_pSoftShadow2ndPassShader->sendUniformMatrix4fv("biasedShadowProjModelView", glm::value_ptr(biasMatrix * shadowProjModelView));
+		s_pSoftShadow2ndPassShader->sendUniform3fv("eLightDir", glm::value_ptr(eLightDir));
+		s_pSoftShadow2ndPassShader->sendUniform3fv("lightColor", glm::value_ptr(color));
+		s_pSoftShadow2ndPassShader->sendUniform1f("shininess", g_Material.shininess);
+		s_pSoftShadow2ndPassShader->sendUniform3fv("diffuseCoeff", glm::value_ptr(g_Material.diffuseCoeff));
+		s_pSoftShadow2ndPassShader->sendUniform3fv("ambient", glm::value_ptr(g_Material.ambient));
 	}
 	else
 	{

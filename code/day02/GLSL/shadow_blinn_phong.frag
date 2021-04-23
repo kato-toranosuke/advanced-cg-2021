@@ -34,5 +34,4 @@ void main()
 	}
 
 	fragColor = vec4(ambient + diffuseColor + specularColor, 1) * textureProj(shadowTex, texCoord);
-
 }
