@@ -2,7 +2,7 @@
 
 // TODO: add "in" variables
 in vec3 eNormal;
-in vec3 eViewDir;
+in vec3 ePosition;
 
 out vec4 fragColor;
 
@@ -17,13 +17,18 @@ void main()
 {
 	// TODO: rewirte this function
 	// 拡散反射光の計算
-	float dotProd = max(dot(normalize(eNormal), normalize(eLightDir)), 0.0);
-	vec3 diffuse = dotProd * lightColor * diffuseCoeff;
+	vec3 eNormalNormalized = normalize(eNormal);
+	float dotDiffuse = max(dot(eNormalNormalized, eLightDir), 0.0);
+	vec3 diffuseColor = dotDiffuse * lightColor * diffuseCoeff;
 
 	// 鏡面反射光の計算
-	vec3 eHalf = (normalize(eLightDir) + normalize(eViewDir)) / length(normalize(eLightDir) + normalize(eViewDir));
-	float cosGamma = max(dot(normalize(eNormal), eHalf), 0.0);
-	vec3 specular = pow(cosGamma, 20.0) * lightColor * (shininess/50.f);
+	vec3 specularColor = vec3(0, 0, 0);
+	if (dotDiffuse > 0.0) {
+		vec3 viewingDir = normalize(-ePosition);
+		vec3 halfVec = normalize(eLightDir + viewingDir);
+		float dotSpecular = max(dot(eNormalNormalized, halfVec), 0.0);
+		specularColor = pow(dotSpecular, shininess) * lightColor * diffuseCoeff;
+	}
 
-	fragColor = vec4(ambient + diffuse + specular, 1);
+	fragColor = vec4(ambient + diffuseColor + specularColor, 1);
 }

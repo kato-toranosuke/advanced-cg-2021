@@ -5,7 +5,7 @@ in vec3 vertexNormal;
 
 // TODO: define "out" variables
 out vec3 eNormal;
-out vec3 eViewDir;
+out vec3 ePosition;
 
 // TODO: uncomment this line
 uniform mat3 modelViewInverseTransposed;
@@ -19,8 +19,8 @@ void main()
 	// モデルビュー変換や投影行列といった変換行列に非一様スケーリングを含む場合、法線に対しただ変換行列をかけるだけではだめ。→モデルビュー行列の逆行列の転置行列をかければ良い。
 	eNormal = modelViewInverseTransposed * vertexNormal;
 	
-	// 視線ベクトルの計算
-	eViewDir = -vec3(modelViewMatrix * vertexPosition);
+	// 位置ベクトルの計算
+	ePosition = (modelViewMatrix * vertexPosition).xyz;
 	
-	gl_Position = projMatrix * modelViewMatrix * vertexPosition;
+	gl_Position = projMatrix * vec4(ePosition, 1);
 }
