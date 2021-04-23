@@ -11,12 +11,12 @@
 
 using namespace std;
 
-GLSLProgramObject* Scene02ShadowMapping::s_pTexShader = 0;
-GLSLProgramObject* Scene02ShadowMapping::s_pShadow1stPassShader = 0;
-GLSLProgramObject* Scene02ShadowMapping::s_pShadow2ndPassShader = 0;
-GLSLProgramObject* Scene02ShadowMapping::s_pSoftShadow2ndPassShader = 0;
+GLSLProgramObject *Scene02ShadowMapping::s_pTexShader = 0;
+GLSLProgramObject *Scene02ShadowMapping::s_pShadow1stPassShader = 0;
+GLSLProgramObject *Scene02ShadowMapping::s_pShadow2ndPassShader = 0;
+GLSLProgramObject *Scene02ShadowMapping::s_pSoftShadow2ndPassShader = 0;
 
-vector<GLSLProgramObject*> Scene02ShadowMapping::s_Shaders;
+vector<GLSLProgramObject *> Scene02ShadowMapping::s_Shaders;
 vector<string> Scene02ShadowMapping::s_VertexShaderFilenames;
 vector<string> Scene02ShadowMapping::s_FragmentShaderFilenames;
 
@@ -58,7 +58,8 @@ void Scene02ShadowMapping::ReloadShaders()
 	const GLuint vertexNormalLocation = 1;
 	const GLuint inTexCoordLocation = 1;
 
-	if (!s_pTexShader) delete s_pTexShader;
+	if (!s_pTexShader)
+		delete s_pTexShader;
 	s_pTexShader = new GLSLProgramObject();
 	s_pTexShader->attachShaderSourceFile(finder.find("tex.vert").c_str(), GL_VERTEX_SHADER);
 	s_pTexShader->attachShaderSourceFile(finder.find("gray_tex.frag").c_str(), GL_FRAGMENT_SHADER);
@@ -72,7 +73,8 @@ void Scene02ShadowMapping::ReloadShaders()
 		s_pTexShader->printProgramLog();
 	}
 
-	if (!s_pShadow1stPassShader) delete s_pShadow1stPassShader;
+	if (!s_pShadow1stPassShader)
+		delete s_pShadow1stPassShader;
 	s_pShadow1stPassShader = new GLSLProgramObject();
 	s_pShadow1stPassShader->attachShaderSourceFile(finder.find("shadow_1st_pass.vert").c_str(), GL_VERTEX_SHADER);
 	s_pShadow1stPassShader->attachShaderSourceFile(finder.find("shadow_1st_pass.frag").c_str(), GL_FRAGMENT_SHADER);
@@ -86,7 +88,8 @@ void Scene02ShadowMapping::ReloadShaders()
 		s_pShadow1stPassShader->printProgramLog();
 	}
 
-	if (!s_pShadow2ndPassShader) delete s_pShadow2ndPassShader;
+	if (!s_pShadow2ndPassShader)
+		delete s_pShadow2ndPassShader;
 	s_pShadow2ndPassShader = new GLSLProgramObject();
 	s_pShadow2ndPassShader->attachShaderSourceFile(finder.find("shadow_blinn_phong.vert").c_str(), GL_VERTEX_SHADER);
 	s_pShadow2ndPassShader->attachShaderSourceFile(finder.find("shadow_blinn_phong.frag").c_str(), GL_FRAGMENT_SHADER);
@@ -100,7 +103,8 @@ void Scene02ShadowMapping::ReloadShaders()
 		s_pShadow2ndPassShader->printProgramLog();
 	}
 
-	if (!s_pSoftShadow2ndPassShader) delete s_pSoftShadow2ndPassShader;
+	if (!s_pSoftShadow2ndPassShader)
+		delete s_pSoftShadow2ndPassShader;
 	s_pSoftShadow2ndPassShader = new GLSLProgramObject();
 	s_pSoftShadow2ndPassShader->attachShaderSourceFile(finder.find("pcf_shadow_blinn_phong.vert").c_str(), GL_VERTEX_SHADER);
 	s_pSoftShadow2ndPassShader->attachShaderSourceFile(finder.find("pcf_shadow_blinn_phong.frag").c_str(), GL_FRAGMENT_SHADER);
@@ -122,34 +126,37 @@ void Scene02ShadowMapping::ReloadShaders()
 		return;
 	}
 
-	if (!s_MeshVAO) glGenVertexArrays(1, &s_MeshVAO);
+	if (!s_MeshVAO)
+		glGenVertexArrays(1, &s_MeshVAO);
 	glBindVertexArray(s_MeshVAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, g_TriMesh.getVertexVBO());
 	glEnableVertexAttribArray(vertexPositionLocation);
-	glVertexAttribPointer(vertexPositionLocation, 3, GL_FLOAT, GL_FALSE, 0, (const void*)0);
+	glVertexAttribPointer(vertexPositionLocation, 3, GL_FLOAT, GL_FALSE, 0, (const void *)0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, g_TriMesh.getVertexNormalVBO());
 	glEnableVertexAttribArray(vertexNormalLocation);
-	glVertexAttribPointer(vertexNormalLocation, 3, GL_FLOAT, GL_FALSE, 0, (const void*)0);
+	glVertexAttribPointer(vertexNormalLocation, 3, GL_FLOAT, GL_FALSE, 0, (const void *)0);
 
-	if (!s_PlaneVAO) glGenVertexArrays(1, &s_PlaneVAO);
+	if (!s_PlaneVAO)
+		glGenVertexArrays(1, &s_PlaneVAO);
 	glBindVertexArray(s_PlaneVAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, g_Plane.getVertexVBO());
 	glEnableVertexAttribArray(vertexPositionLocation);
-	glVertexAttribPointer(vertexPositionLocation, 3, GL_FLOAT, GL_FALSE, 0, (const void*)0);
+	glVertexAttribPointer(vertexPositionLocation, 3, GL_FLOAT, GL_FALSE, 0, (const void *)0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, g_Plane.getVertexNormalVBO());
 	glEnableVertexAttribArray(vertexNormalLocation);
-	glVertexAttribPointer(vertexNormalLocation, 3, GL_FLOAT, GL_FALSE, 0, (const void*)0);
+	glVertexAttribPointer(vertexNormalLocation, 3, GL_FLOAT, GL_FALSE, 0, (const void *)0);
 
 	// build a screen-sized quad
 
-	float quadVertices[] = { -1, -1, 1, -1, 1, 1, -1, -1, 1, 1, -1, 1 };
-	float quadTexCoords[] = { 0,  0, 1,  0, 1, 1,  0,  0, 1, 1,  0, 1 };
+	float quadVertices[] = {-1, -1, 1, -1, 1, 1, -1, -1, 1, 1, -1, 1};
+	float quadTexCoords[] = {0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1};
 
-	if (!s_QuadVAO) glGenVertexArrays(1, &s_QuadVAO);
+	if (!s_QuadVAO)
+		glGenVertexArrays(1, &s_QuadVAO);
 	glBindVertexArray(s_QuadVAO);
 
 	GLuint quadVBO;
@@ -161,10 +168,10 @@ void Scene02ShadowMapping::ReloadShaders()
 	glBufferSubData(GL_ARRAY_BUFFER, sizeof(quadVertices), sizeof(quadTexCoords), quadTexCoords);
 
 	glEnableVertexAttribArray(vertexPositionLocation);
-	glVertexAttribPointer(vertexPositionLocation, 2, GL_FLOAT, GL_FALSE, 0, (const void*)0); // vertices
+	glVertexAttribPointer(vertexPositionLocation, 2, GL_FLOAT, GL_FALSE, 0, (const void *)0); // vertices
 
 	glEnableVertexAttribArray(inTexCoordLocation);
-	glVertexAttribPointer(inTexCoordLocation, 2, GL_FLOAT, GL_FALSE, 0, (const void*)sizeof(quadVertices)); // texture coordinates
+	glVertexAttribPointer(inTexCoordLocation, 2, GL_FLOAT, GL_FALSE, 0, (const void *)sizeof(quadVertices)); // texture coordinates
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -184,8 +191,8 @@ void Scene02ShadowMapping::Draw()
 	auto projModelViewMatrix = g_ProjMatrix * modelViewMatrix;
 	glm::mat3 modelViewInverseTransposed = glm::transpose(glm::inverse(glm::mat3(modelViewMatrix)));
 
-	auto& color = DirectionalLightManager::GetLightColors()[0];
-	auto& dir = DirectionalLightManager::GetLightDirs()[0];
+	auto &color = DirectionalLightManager::GetLightColors()[0];
+	auto &dir = DirectionalLightManager::GetLightDirs()[0];
 
 	const float cosPhi = cos(dir.x), sinPhi = sin(dir.x);
 	const float cosTheta = cos(dir.y), sinTheta = sin(dir.y);
@@ -235,15 +242,14 @@ void Scene02ShadowMapping::Draw()
 
 	CheckGLError(__FUNCTION__, __FILE__, __LINE__);
 
-
 	// 2nd pass
 
 	glViewport(0, 0, s_WindowWidth, s_WindowHeight);
 
 	glm::mat4 biasMatrix(0.5f, 0.f, 0.f, 0.f,
-		0.f, 0.5f, 0.f, 0.f,
-		0.f, 0.f, 0.5f, 0.f,
-		0.5f, 0.5f, 0.5f, 1.f);
+											 0.f, 0.5f, 0.f, 0.f,
+											 0.f, 0.f, 0.5f, 0.f,
+											 0.5f, 0.5f, 0.5f, 1.f);
 
 	//glPushAttrib(GL_ENABLE_BIT);		// deprecated from OpenGL 3.0
 
@@ -275,14 +281,14 @@ void Scene02ShadowMapping::Draw()
 		s_pShadow2ndPassShader->sendUniformMatrix4fv("projMatrix", glm::value_ptr(g_ProjMatrix));
 		s_pShadow2ndPassShader->sendUniformMatrix4fv("modelViewMatrix", glm::value_ptr(modelViewMatrix));
 		// TODO: uncomment these lines
-		//s_pShadow2ndPassShader->sendUniformMatrix3fv("modelViewInverseTransposed", glm::value_ptr(modelViewInverseTransposed));
-		//s_pShadow2ndPassShader->sendUniform1i("shadowTex", 0);
-		//s_pShadow2ndPassShader->sendUniformMatrix4fv("biasedShadowProjModelView", glm::value_ptr(biasMatrix* shadowProjModelView));
-		//s_pShadow2ndPassShader->sendUniform3fv("eLightDir", glm::value_ptr(eLightDir));
-		//s_pShadow2ndPassShader->sendUniform3fv("lightColor", glm::value_ptr(color));
-		//s_pShadow2ndPassShader->sendUniform1f("shininess", g_Material.shininess);
-		//s_pShadow2ndPassShader->sendUniform3fv("diffuseCoeff", glm::value_ptr(g_Material.diffuseCoeff));
-		//s_pShadow2ndPassShader->sendUniform3fv("ambient", glm::value_ptr(g_Material.ambient));
+		s_pShadow2ndPassShader->sendUniformMatrix3fv("modelViewInverseTransposed", glm::value_ptr(modelViewInverseTransposed));
+		s_pShadow2ndPassShader->sendUniform1i("shadowTex", 0);
+		s_pShadow2ndPassShader->sendUniformMatrix4fv("biasedShadowProjModelView", glm::value_ptr(biasMatrix * shadowProjModelView));
+		s_pShadow2ndPassShader->sendUniform3fv("eLightDir", glm::value_ptr(eLightDir));
+		s_pShadow2ndPassShader->sendUniform3fv("lightColor", glm::value_ptr(color));
+		s_pShadow2ndPassShader->sendUniform1f("shininess", g_Material.shininess);
+		s_pShadow2ndPassShader->sendUniform3fv("diffuseCoeff", glm::value_ptr(g_Material.diffuseCoeff));
+		s_pShadow2ndPassShader->sendUniform3fv("ambient", glm::value_ptr(g_Material.ambient));
 	}
 
 	glBindVertexArray(s_MeshVAO);
@@ -290,10 +296,10 @@ void Scene02ShadowMapping::Draw()
 	glBindVertexArray(0);
 
 	// TODO: uncomment these lines
-	//if (s_UseSoftShadow)
-	//	s_pSoftShadow2ndPassShader->sendUniformMatrix4fv("modelViewMatrix", glm::value_ptr(viewMatrix));
-	//else
-	//	s_pShadow2ndPassShader->sendUniformMatrix4fv("modelViewMatrix", glm::value_ptr(viewMatrix));
+	if (s_UseSoftShadow)
+		s_pSoftShadow2ndPassShader->sendUniformMatrix4fv("modelViewMatrix", glm::value_ptr(viewMatrix));
+	else
+		s_pShadow2ndPassShader->sendUniformMatrix4fv("modelViewMatrix", glm::value_ptr(viewMatrix));
 
 	glBindVertexArray(s_PlaneVAO);
 	glDrawArrays(GL_TRIANGLES, 0, 3 * g_Plane.getNumTriangles());
@@ -375,9 +381,10 @@ void Scene02ShadowMapping::Draw()
 	CheckGLError(__FUNCTION__, __FILE__, __LINE__);
 }
 
-void Scene02ShadowMapping::Resize(GLFWwindow* window, int w, int h)
+void Scene02ShadowMapping::Resize(GLFWwindow *window, int w, int h)
 {
-	if (h == 0) h = 1;
+	if (h == 0)
+		h = 1;
 
 	AbstractScene::Resize(window, w, h);
 }
@@ -386,12 +393,12 @@ void Scene02ShadowMapping::ImGui()
 {
 	ImGui::Text("Scene02ShadowMapping Menu:");
 
-	auto& color = DirectionalLightManager::GetLightColors()[0];
-	auto& dir = DirectionalLightManager::GetLightDirs()[0];
+	auto &color = DirectionalLightManager::GetLightColors()[0];
+	auto &dir = DirectionalLightManager::GetLightDirs()[0];
 
 	bool lightUpdated = false;
 
-	lightUpdated |= ImGui::ColorEdit3("Light Color", (float*)& color.x);
+	lightUpdated |= ImGui::ColorEdit3("Light Color", (float *)&color.x);
 	lightUpdated |= ImGui::SliderFloat("Light Phi", &dir.x, 0.0, 2.f * glm::pi<float>());
 	lightUpdated |= ImGui::SliderFloat("Light Theta", &dir.y, 0.f, glm::pi<float>() / 2.25f);
 
@@ -412,20 +419,25 @@ void Scene02ShadowMapping::ImGui()
 
 void Scene02ShadowMapping::Destroy()
 {
-	for (auto p : s_Shaders) delete p;
+	for (auto p : s_Shaders)
+		delete p;
 	s_Shaders.clear();
-	if (s_MeshVAO) glDeleteVertexArrays(1, &s_MeshVAO);
-	if (s_PlaneVAO) glDeleteVertexArrays(1, &s_PlaneVAO);
+	if (s_MeshVAO)
+		glDeleteVertexArrays(1, &s_MeshVAO);
+	if (s_PlaneVAO)
+		glDeleteVertexArrays(1, &s_PlaneVAO);
 }
 
 void Scene02ShadowMapping::GenShadowMap()
 {
 	CheckGLError(__FUNCTION__, __FILE__, __LINE__);
 
-	if (!s_ShadowFBO) glGenFramebuffers(1, &s_ShadowFBO);
+	if (!s_ShadowFBO)
+		glGenFramebuffers(1, &s_ShadowFBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, s_ShadowFBO);
 
-	if (!s_ShadowTexID) glGenTextures(1, &s_ShadowTexID);
+	if (!s_ShadowTexID)
+		glGenTextures(1, &s_ShadowTexID);
 	glBindTexture(GL_TEXTURE_2D, s_ShadowTexID);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, s_ShadowTexSize, s_ShadowTexSize, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -433,7 +445,7 @@ void Scene02ShadowMapping::GenShadowMap()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
-	GLfloat border_color[4] = { 1, 1, 1, 1 };
+	GLfloat border_color[4] = {1, 1, 1, 1};
 	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, border_color);
 
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, s_ShadowTexID, 0);
@@ -451,7 +463,7 @@ void Scene02ShadowMapping::GenShadowMap()
 	CheckGLError(__FUNCTION__, __FILE__, __LINE__);
 }
 
-void Scene02ShadowMapping::CalcLightViewTransform(const glm::vec3& lightDir, const float boundingSphereRadius, glm::mat4& shadowProjModelViewMatrix)
+void Scene02ShadowMapping::CalcLightViewTransform(const glm::vec3 &lightDir, const float boundingSphereRadius, glm::mat4 &shadowProjModelViewMatrix)
 {
 	// adjust the up vector if lightDir.y is close to one
 	glm::vec3 up = (lightDir.y > 0.8f) ? glm::vec3(0, 0, 1) : glm::vec3(0, 1, 0);
