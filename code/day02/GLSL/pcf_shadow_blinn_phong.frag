@@ -28,6 +28,15 @@ void main()
 	// HINT: The visibility (i.e., shadowed or not) can be fetched using the "offsetLookup" function
 	//       in the double loops. The y and x loops ranges from -samplingLimit to samplingLimit
 	//       with a stepsize 1.0. Finally, the summed visibility is divided by 64 to normalize.
+	float targetShadowTexVal = 0.0;	
+	for (float y = -samplingLimit; y <= samplingLimit; y += 1.0) {
+		for (float x = -samplingLimit; x <= samplingLimit; x += 1.0) {
+			vec2 offset = vec2(x, y);
+			float shadowTexVal = offsetLookup(shadowTex, texCoord, offset);
+			targetShadowTexVal += shadowTexVal;
+		}
+	}
+	targetShadowTexVal /= 64.0;
 
 	// TODO: rewirte this function
 	// 拡散反射光の計算
@@ -44,5 +53,6 @@ void main()
 		specularColor = pow(dotSpecular, shininess) * lightColor * diffuseCoeff;
 	}
 
-	fragColor = vec4(ambient + diffuseColor + specularColor, 1) * textureProj(shadowTex, texCoord);
+	fragColor = vec4(vec3(ambient + diffuseColor + specularColor) * targetShadowTexVal, 1);
+	// fragColor = vec4(ambient + diffuseColor + specularColor, 1) * targetShadowTexVal;
 }
