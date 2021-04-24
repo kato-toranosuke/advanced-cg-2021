@@ -11,15 +11,15 @@
 
 using namespace std;
 
-GLSLProgramObject* Scene03MultipleRenderTarget::s_pTexShader = 0;
-GLSLProgramObject* Scene03MultipleRenderTarget::s_pShader = 0;
+GLSLProgramObject *Scene03MultipleRenderTarget::s_pTexShader = 0;
+GLSLProgramObject *Scene03MultipleRenderTarget::s_pShader = 0;
 
 GLuint Scene03MultipleRenderTarget::s_MeshVAO = 0;
 GLuint Scene03MultipleRenderTarget::s_PlaneVAO = 0;
 GLuint Scene03MultipleRenderTarget::s_QuadVAO = 0;
 GLuint Scene03MultipleRenderTarget::s_MRTFBO = 0;
 GLuint Scene03MultipleRenderTarget::s_DepthRB = 0;
-GLuint* Scene03MultipleRenderTarget::s_pTexIDs = 0;
+GLuint *Scene03MultipleRenderTarget::s_pTexIDs = 0;
 
 int Scene03MultipleRenderTarget::s_CachedWidth = 0;
 int Scene03MultipleRenderTarget::s_CachedHeight = 0;
@@ -49,7 +49,8 @@ void Scene03MultipleRenderTarget::ReloadShaders()
 	const GLuint vertexNormalLocation = 1;
 	const GLuint inTexCoordLocation = 1;
 
-	if (!s_pTexShader) delete s_pTexShader;
+	if (!s_pTexShader)
+		delete s_pTexShader;
 	s_pTexShader = new GLSLProgramObject();
 	s_pTexShader->attachShaderSourceFile(finder.find("tex.vert").c_str(), GL_VERTEX_SHADER);
 	s_pTexShader->attachShaderSourceFile(finder.find("tex.frag").c_str(), GL_FRAGMENT_SHADER);
@@ -63,7 +64,8 @@ void Scene03MultipleRenderTarget::ReloadShaders()
 		s_pTexShader->printProgramLog();
 	}
 
-	if (!s_pShader) delete s_pShader;
+	if (!s_pShader)
+		delete s_pShader;
 	s_pShader = new GLSLProgramObject();
 	s_pShader->attachShaderSourceFile(finder.find("mrt.vert").c_str(), GL_VERTEX_SHADER);
 	s_pShader->attachShaderSourceFile(finder.find("mrt.frag").c_str(), GL_FRAGMENT_SHADER);
@@ -77,35 +79,38 @@ void Scene03MultipleRenderTarget::ReloadShaders()
 		s_pShader->printProgramLog();
 	}
 
-	if (!s_MeshVAO) glGenVertexArrays(1, &s_MeshVAO);
+	if (!s_MeshVAO)
+		glGenVertexArrays(1, &s_MeshVAO);
 	glBindVertexArray(s_MeshVAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, g_TriMesh.getVertexVBO());
 	glEnableVertexAttribArray(vertexPositionLocation);
-	glVertexAttribPointer(vertexPositionLocation, 3, GL_FLOAT, GL_FALSE, 0, (const void*)0);
+	glVertexAttribPointer(vertexPositionLocation, 3, GL_FLOAT, GL_FALSE, 0, (const void *)0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, g_TriMesh.getVertexNormalVBO());
 	glEnableVertexAttribArray(vertexNormalLocation);
-	glVertexAttribPointer(vertexNormalLocation, 3, GL_FLOAT, GL_FALSE, 0, (const void*)0);
+	glVertexAttribPointer(vertexNormalLocation, 3, GL_FLOAT, GL_FALSE, 0, (const void *)0);
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	if (!s_PlaneVAO) glGenVertexArrays(1, &s_PlaneVAO);
+	if (!s_PlaneVAO)
+		glGenVertexArrays(1, &s_PlaneVAO);
 	glBindVertexArray(s_PlaneVAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, g_Plane.getVertexVBO());
 	glEnableVertexAttribArray(vertexPositionLocation);
-	glVertexAttribPointer(vertexPositionLocation, 3, GL_FLOAT, GL_FALSE, 0, (const void*)0);
+	glVertexAttribPointer(vertexPositionLocation, 3, GL_FLOAT, GL_FALSE, 0, (const void *)0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, g_Plane.getVertexNormalVBO());
 	glEnableVertexAttribArray(vertexNormalLocation);
-	glVertexAttribPointer(vertexNormalLocation, 3, GL_FLOAT, GL_FALSE, 0, (const void*)0);
+	glVertexAttribPointer(vertexNormalLocation, 3, GL_FLOAT, GL_FALSE, 0, (const void *)0);
 
-	float quadVertices[] = { -1, -1, 1, -1, 1, 1, -1, -1, 1, 1, -1, 1 };
-	float quadTexCoords[] = { 0,  0, 1,  0, 1, 1,  0,  0, 1, 1,  0, 1 };
+	float quadVertices[] = {-1, -1, 1, -1, 1, 1, -1, -1, 1, 1, -1, 1};
+	float quadTexCoords[] = {0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1};
 
-	if (!s_QuadVAO) glGenVertexArrays(1, &s_QuadVAO);
+	if (!s_QuadVAO)
+		glGenVertexArrays(1, &s_QuadVAO);
 	glBindVertexArray(s_QuadVAO);
 
 	GLuint quadVBO;
@@ -117,10 +122,10 @@ void Scene03MultipleRenderTarget::ReloadShaders()
 	glBufferSubData(GL_ARRAY_BUFFER, sizeof(quadVertices), sizeof(quadTexCoords), quadTexCoords);
 
 	glEnableVertexAttribArray(vertexPositionLocation);
-	glVertexAttribPointer(vertexPositionLocation, 2, GL_FLOAT, GL_FALSE, 0, (const void*)0); // vertices
+	glVertexAttribPointer(vertexPositionLocation, 2, GL_FLOAT, GL_FALSE, 0, (const void *)0); // vertices
 
 	glEnableVertexAttribArray(inTexCoordLocation);
-	glVertexAttribPointer(inTexCoordLocation, 2, GL_FLOAT, GL_FALSE, 0, (const void*)sizeof(quadVertices)); // texture coordinates
+	glVertexAttribPointer(inTexCoordLocation, 2, GL_FLOAT, GL_FALSE, 0, (const void *)sizeof(quadVertices)); // texture coordinates
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -139,8 +144,10 @@ void Scene03MultipleRenderTarget::Draw()
 
 	auto viewMatrix = g_Camera.transform();
 	auto modelViewMatrix = viewMatrix * g_TriMesh.getModelMatrix();
+	// add
+	glm::mat3 modelViewInvTransposed = glm::transpose(glm::inverse(glm::mat3(modelViewMatrix)));
 
-	const GLenum colorAttachements[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+	const GLenum colorAttachements[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
 
 	//glPushAttrib(GL_ENABLE_BIT);	// deprecated from OpenGL 3.0
 	glEnable(GL_DEPTH_TEST);
@@ -156,6 +163,8 @@ void Scene03MultipleRenderTarget::Draw()
 	s_pShader->use();
 	s_pShader->sendUniformMatrix4fv("projMatrix", glm::value_ptr(g_ProjMatrix));
 	s_pShader->sendUniformMatrix4fv("modelViewMatrix", glm::value_ptr(modelViewMatrix));
+	// add
+	s_pShader->sendUniformMatrix3fv("modelViewInvTransposed", glm::value_ptr(modelViewInvTransposed));
 
 	glBindVertexArray(s_MeshVAO);
 	glDrawArrays(GL_TRIANGLES, 0, 3 * g_TriMesh.getNumTriangles());
@@ -187,7 +196,7 @@ void Scene03MultipleRenderTarget::Draw()
 	//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
 	//glm::vec2 offsets[3] = { glm::vec2(-1,-1), glm::vec2(-1, 0), glm::vec2(0, 0) };
-	glm::vec2 offsets[3] = { glm::vec2(-0.5f, -0.5f), glm::vec2(-0.5f, 0.5f), glm::vec2(0.5f, 0.5f) };
+	glm::vec2 offsets[3] = {glm::vec2(-0.5f, -0.5f), glm::vec2(-0.5f, 0.5f), glm::vec2(0.5f, 0.5f)};
 
 	for (int ti = 0; ti < 3; ++ti)
 	{
@@ -231,7 +240,7 @@ void Scene03MultipleRenderTarget::Draw()
 	CheckGLError(__FUNCTION__, __FILE__, __LINE__);
 }
 
-void Scene03MultipleRenderTarget::Resize(GLFWwindow* window, int w, int h)
+void Scene03MultipleRenderTarget::Resize(GLFWwindow *window, int w, int h)
 {
 	AbstractScene::Resize(window, w, h);
 	AllocateFBO(w, h);
@@ -243,8 +252,10 @@ void Scene03MultipleRenderTarget::ImGui()
 
 void Scene03MultipleRenderTarget::Destroy()
 {
-	if (s_pTexShader) delete s_pTexShader;
-	if (s_pShader) delete s_pShader;
+	if (s_pTexShader)
+		delete s_pTexShader;
+	if (s_pShader)
+		delete s_pShader;
 
 	if (s_pTexIDs)
 	{
@@ -252,11 +263,15 @@ void Scene03MultipleRenderTarget::Destroy()
 		delete[] s_pTexIDs;
 	}
 
-	if (s_MRTFBO) glDeleteFramebuffers(1, &s_MRTFBO);
-	if (s_DepthRB) glDeleteRenderbuffers(1, &s_DepthRB);
+	if (s_MRTFBO)
+		glDeleteFramebuffers(1, &s_MRTFBO);
+	if (s_DepthRB)
+		glDeleteRenderbuffers(1, &s_DepthRB);
 
-	if (s_MeshVAO) glDeleteVertexArrays(1, &s_MeshVAO);
-	if (s_PlaneVAO) glDeleteVertexArrays(1, &s_PlaneVAO);
+	if (s_MeshVAO)
+		glDeleteVertexArrays(1, &s_MeshVAO);
+	if (s_PlaneVAO)
+		glDeleteVertexArrays(1, &s_PlaneVAO);
 }
 
 void Scene03MultipleRenderTarget::AllocateFBO(int w, int h)
@@ -266,15 +281,17 @@ void Scene03MultipleRenderTarget::AllocateFBO(int w, int h)
 	s_CachedWidth = w;
 	s_CachedHeight = h;
 
-	if (!s_MRTFBO) glGenFramebuffers(1, &s_MRTFBO);
+	if (!s_MRTFBO)
+		glGenFramebuffers(1, &s_MRTFBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, s_MRTFBO);
 
-	if (!s_DepthRB) glGenRenderbuffers(1, &s_DepthRB);
+	if (!s_DepthRB)
+		glGenRenderbuffers(1, &s_DepthRB);
 	glBindRenderbuffer(GL_RENDERBUFFER, s_DepthRB);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, w, h);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, s_DepthRB);
 
-	const GLenum colorAttachements[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+	const GLenum colorAttachements[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
 
 	CheckGLError(__FUNCTION__, __FILE__, __LINE__);
 
