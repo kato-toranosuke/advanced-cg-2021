@@ -1,0 +1,119 @@
+\documentclass[a4paper,10pt,uplatex,dvipdfmx]{jsarticle}
+
+
+% 数式
+\usepackage{amsmath,amsfonts}
+\usepackage{bm}
+% 画像
+\usepackage[dvipdfmx]{graphicx}
+\usepackage{here}
+% program
+\usepackage{color}
+\usepackage{listings, jlisting}
+\input{listings-glsl.prf}
+% \lstset{language=GLSL}
+% 枠付き
+\usepackage{ascmac}
+
+\lstset{
+ language={GLSL},%言語の指定
+%  backgroundcolor={\color[gray]{.85}},%背景色と透過度
+ basicstyle={\ttfamily},%書体の指定
+ identifierstyle={\small\color[rgb]{0.8,0.5,0}},%キーワードでない文字の書体
+ commentstyle={\small\itshape\color[rgb]{0,0.3,0}},%注釈の書体
+ keywordstyle={\small\bfseries\color[rgb]{0,0.5,1}},%キーワード(int, ifなど)の書体指定
+ ndkeywordstyle={\small},%
+ stringstyle={\small\ttfamily\color[rgb]{1,0.5,0}},%文字列
+ frame={tb},%枠縁(leftline，topline，bottomline，lines，trBL，shadowbox, single)
+ breaklines=true,%折り返し(自動改行)
+ breakindent = 10pt,  %自動改行後のインデント量(デフォルトでは20[pt])	
+ columns=[l]{fullflexible},%
+ numbers=left,%行番号表示
+ xrightmargin=0zw,%
+ xleftmargin=3zw,%
+ numberstyle={\scriptsize},%行番号の書体指定
+ stepnumber=1,
+ numbersep=1zw,%
+ lineskip=-0.5ex%
+}
+\renewcommand{\lstlistingname}{Code} % キャプション名の指定
+
+\begin{document}
+\title{アドバンストCG\\ \huge 第2回レポート}
+\author{学籍番号：201811411\\ 所属：情報学群情報メディア創成学類\\ 氏名：加藤虎之介}
+\date{\today}
+\maketitle
+
+\section{実行環境}
+\subsection{実行に用いたOS}
+macOS Big ver11.2.3
+
+\subsection{プログラム起動時に表示される情報}
+\begin{screen}
+  OpenGL version: 4.1 ATI-4.2.15\\
+  GLSL version: 4.10\\
+  Vendor: ATI Technologies Inc.\\
+  Renderer: AMD Radeon Pro 5300M OpenGL Engine
+\end{screen}
+
+\section{課題結果}
+\subsection*{課題1}
+\subsubsection*{プログラム}
+\lstinputlisting[caption = phong.vert]{/Users/toranosuke/GoogleDrive/LectureDocument/2021/01_SpringSemester/AdvancedCG/code/day02/GLSL/phong.vert}
+\lstinputlisting[caption = phong.frag]{/Users/toranosuke/GoogleDrive/LectureDocument/2021/01_SpringSemester/AdvancedCG/code/day02/GLSL/phong.frag}
+\lstinputlisting[caption = blinn\_phong.vert]{/Users/toranosuke/GoogleDrive/LectureDocument/2021/01_SpringSemester/AdvancedCG/code/day02/GLSL/blinn_phong.frag}
+\lstinputlisting[caption = blinn\_phong.frag]{/Users/toranosuke/GoogleDrive/LectureDocument/2021/01_SpringSemester/AdvancedCG/code/day02/GLSL/blinn_phong.frag}
+
+\subsubsection*{実行結果}
+\begin{itemize}
+  \item Phong Model
+    \begin{figure}[H]
+      \centering
+      \includegraphics*[width=6cm]{./img/phong.png}
+      \caption{Phong Model}
+    \end{figure}
+  \item Blinn-Phong Model
+    \begin{figure}[H]
+      \centering
+      \includegraphics*[width=6cm]{./img/blinn-phong.png}
+      \caption{Blinn-Phong Model}
+    \end{figure}
+\end{itemize}
+
+
+\subsection*{課題2}
+\subsubsection*{プログラム}
+\lstinputlisting[caption = shadow\_blinn\_phong.vert]{/Users/toranosuke/GoogleDrive/LectureDocument/2021/01_SpringSemester/AdvancedCG/code/day02/GLSL/shadow_blinn_phong.vert}
+\lstinputlisting[caption = shadow\_blinn\_phong.frag]{/Users/toranosuke/GoogleDrive/LectureDocument/2021/01_SpringSemester/AdvancedCG/code/day02/GLSL/shadow_blinn_phong.frag}
+\lstinputlisting[caption = pcf\_shadow\_blinn\_phong.vert]{/Users/toranosuke/GoogleDrive/LectureDocument/2021/01_SpringSemester/AdvancedCG/code/day02/GLSL/pcf_shadow_blinn_phong.vert}
+\lstinputlisting[caption = pcf\_shadow\_blinn\_phong.frag]{/Users/toranosuke/GoogleDrive/LectureDocument/2021/01_SpringSemester/AdvancedCG/code/day02/GLSL/pcf_shadow_blinn_phong.frag}
+
+\subsubsection*{実行結果}
+\begin{itemize}
+  \item Shadow Mapping
+    \begin{figure}[H]
+      \centering
+      \includegraphics*[width=6cm]{./img/shadow-mapping.png}
+      \caption{Shadow Mapping}
+    \end{figure}
+  \item Percentage-closer filterによるソフトシャドウ
+    \begin{figure}[H]
+      \centering
+      \includegraphics*[width=6cm]{./img/pcf.png}
+      \caption{PCF}
+    \end{figure}
+\end{itemize}
+
+\subsection*{課題3}
+\subsubsection*{プログラム}
+\lstinputlisting[caption = mrt.vert]{/Users/toranosuke/GoogleDrive/LectureDocument/2021/01_SpringSemester/AdvancedCG/code/day02/GLSL/mrt.vert}
+\lstinputlisting[caption = mrt.frag]{/Users/toranosuke/GoogleDrive/LectureDocument/2021/01_SpringSemester/AdvancedCG/code/day02/GLSL/mrt.frag}
+
+\subsubsection*{実行結果}
+\begin{figure}[H]
+  \centering
+  \includegraphics*[width=6cm]{./img/mrt.png}
+  \caption{Multiple Render Target}
+\end{figure}
+
+\end{document}
