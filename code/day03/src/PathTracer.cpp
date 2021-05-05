@@ -21,7 +21,7 @@ int PathTracer::s_MinRecursionDepth = 5;
 int PathTracer::s_NumSamplesPerPixel = 100;
 int PathTracer::s_NumSamplesPerUpdate = 5;
 
-extern GLFWwindow* g_pWindow;
+extern GLFWwindow *g_pWindow;
 extern ArcballCamera g_Camera;
 extern Scene g_Scene;
 extern int g_WindowWidth, g_WindowHeight;
@@ -79,7 +79,8 @@ void PathTracer::renderScene()
 
 void PathTracer::renderFrame()
 {
-	if (!m_FrameBufferTexID) return;
+	if (!m_FrameBufferTexID)
+		return;
 
 	if (!m_pGammaShader)
 		initShader();
@@ -95,10 +96,14 @@ void PathTracer::renderFrame()
 	m_pGammaShader->sendUniform2f("offset", uOffset, vOffset);
 
 	glBegin(GL_QUADS);
-	glTexCoord2f(0, 0);	glVertex2f(-1, -1);
-	glTexCoord2f(1, 0);	glVertex2f( 1, -1);
-	glTexCoord2f(1, 1);	glVertex2f( 1,  1);
-	glTexCoord2f(0, 1);	glVertex2f(-1,  1);
+	glTexCoord2f(0, 0);
+	glVertex2f(-1, -1);
+	glTexCoord2f(1, 0);
+	glVertex2f(1, -1);
+	glTexCoord2f(1, 1);
+	glVertex2f(1, 1);
+	glTexCoord2f(0, 1);
+	glVertex2f(-1, 1);
 	glEnd();
 
 	m_pGammaShader->disable();
@@ -127,7 +132,7 @@ void PathTracer::initShader()
 			uniform vec2 offset;
 			void main(void)
 			{
-				gl_FragColor = vec4(pow(texture2D(tex, gl_TexCoord[0].st + offset).rgb, vec3(1.0/gamma)), 1.0);
+				gl_FragColor = vec4(pow(texture2D(tex, gl_TexCoord[0].st + offset).rgb, vec3(1.0 / gamma)), 1.0);
 			}
 		)", GL_FRAGMENT_SHADER);
 
@@ -140,10 +145,10 @@ void PathTracer::initShader()
 	}
 
 	// NVIDIA driver requires -0.5 offsets in texture fetch in order to match the path-traced result
-	m_isNVIDIADriver = strncmp((const char*)glGetString(GL_VENDOR), "NVIDIA", sizeof("NVIDIA") - 1) == 0;
+	m_isNVIDIADriver = strncmp((const char *)glGetString(GL_VENDOR), "NVIDIA", sizeof("NVIDIA") - 1) == 0;
 }
 
-glm::vec3 PathTracer::traceRec(const Ray& ray, int recursionDepth)
+glm::vec3 PathTracer::traceRec(const Ray &ray, int recursionDepth)
 {
 	if (recursionDepth > s_MaxRecursionDepth)
 		return g_Scene.getBackgroundColor(ray);
@@ -158,7 +163,7 @@ glm::vec3 PathTracer::traceRec(const Ray& ray, int recursionDepth)
 
 	for (int oi = 0; oi < g_Scene.getNumObjects(); oi++)
 	{
-		GeometricObject* o = g_Scene.getObject(oi);
+		GeometricObject *o = g_Scene.getObject(oi);
 
 		HitRecord tmpRec;
 		const bool isHit = o->hit(ray, tEpsilon, tInfinity, tmpRec);
@@ -182,29 +187,108 @@ glm::vec3 PathTracer::traceRec(const Ray& ray, int recursionDepth)
 	else if (matType == Material::Diffuse_Type)
 	{
 		// TODO: implement Lambert (diffuse) reflection with BRDF importance sampling
+		// 拡散反射係数を取得
+		const vec3 &diffuseCoeff = ((DiffuseMaterial *)record.m_pMaterial)->getDiffuseCoeff();
+		// 再帰の深さが最小値より小さければ閾値を1.0にする。
+		const float russianRouletterProbability = (recursionDepth > s_MinRecursionDepth) ? std::max(diffuseCoeff.x, std::max(diffuseCoeff.y, diffuseCoeff.z)) : 1.f;
+		// 閾値より大きければ計算を打ち切る
+		if (frand() >= russianRouletterProbability){
+			// return g_Scene.getBackgroundColor(ray);
+			return vec3(0.f);
+		}
 
+		// 追跡するレイの方向を決めるために、局所座標系を定義する。
 		// HINT: local coordinate system can be defined using the following function:
-		//vec3 xLocal, yLocal, zLocal;
-		//calcLocalCoordinateSystem(record.m_Normal, ray.getUnitDir(), xLocal, yLocal, zLocal);
+		vec3 xLocal, yLocal, zLocal;
+		calcLocalCoordinateSystem(record.m_Normal, ray.getUnitDir(), xLocal, yLocal, zLocal);
 
-		return vec3(0.f);
+		// 乱数に基づいてθとφの値を決め、局所座標系でレイの追跡方向を決定する。
+		// 乱数でサンプリング
+		const float xi1 = frand();
+		const float xi2 = frand();
+		// 局所座標系でのレイの追跡方向を決定
+		const float phi = 2.f * pi<float>() * xi1;
+		const float theta = acos(sqrt(xi2));
+		// 通常座標系でのレイの追跡方向
+		const vec3 traceDirLocal = vec3(cos(phi) * cos(theta), sin(theta), sin(phi) * cos(theta));
+		const vec3 traceDir = normalize(traceDirLocal);
+		
+		// 積分計算と、再帰呼び出しの返値であるレイの追跡結果の色とを、RGBの各成分に乗算してリターンする。
+		const vec3 weight = diffuseCoeff / russianRouletterProbability;
+		// const vec3 weight = diffuseCoeff;
+		return weight * traceRec(Ray(record.m_HitPos, traceDir), recursionDepth + 1);
 	}
 	else if (matType == Material::Blinn_Phong_Type)
 	{
 		// TODO: implement Blinn-Phong reflection with BRDF importance sampling
+		// 鏡面反射係数を取得
+		const vec3 &diffuseCoeff = ((BlinnPhongMaterial *)record.m_pMaterial)->getDiffuseCoeff();
+		const vec3 &specularCoeff = ((BlinnPhongMaterial *)record.m_pMaterial)->getSpecularCoeff();
+		const float shiness = ((BlinnPhongMaterial *)record.m_pMaterial)->getShininess();
+		// 再帰の深さが最小値より小さければ閾値を1.0にする。
+		const float russianRouletterProbability = std::max(diffuseCoeff.x, std::max(diffuseCoeff.y, diffuseCoeff.z));
+		const vec3 dsCoeff = diffuseCoeff + specularCoeff;
+		const float russianRouletterProbability2 = (recursionDepth > s_MinRecursionDepth) ? std::max(dsCoeff.x, std::max(dsCoeff.y, dsCoeff.z)) : 1.f;
+		// 閾値より場合分け
+		const float val = frand();
 
-		return vec3(0.f);
+		// 追跡するレイの方向を決めるために、局所座標系を定義する。
+		vec3 xLocal, yLocal, zLocal;
+		calcLocalCoordinateSystem(record.m_Normal, ray.getUnitDir(), xLocal, yLocal, zLocal);
+
+		if (val < russianRouletterProbability) {
+			// ****拡散反射の計算****
+			// 乱数に基づいてθとφの値を決め、局所座標系でレイの追跡方向を決定する。
+			// 乱数でサンプリング
+			const float xi1 = frand();
+			const float xi2 = frand();
+			// 局所座標系でのレイの追跡方向を決定
+			const float phi = 2.f * pi<float>() * xi1;
+			const float theta = acos(sqrt(xi2));
+			// 通常座標系でのレイの追跡方向
+			const vec3 traceDirLocal = vec3(cos(phi) * cos(theta), sin(theta), sin(phi) * cos(theta));
+			const vec3 traceDir = normalize(traceDirLocal);
+
+			// 積分計算と、再帰呼び出しの返値であるレイの追跡結果の色とを、RGBの各成分に乗算してリターンする。
+			// const vec3 weight = 1.f / diffuseCoeff;
+			const float weight = 0.8f;
+			// const vec3 weight = diffuseCoeff / russianRouletterProbability;
+			return weight * traceRec(Ray(record.m_HitPos, traceDir), recursionDepth + 1);
+
+		} else if (russianRouletterProbability <= val && val < russianRouletterProbability2){
+			// ****鏡面反射の計算****
+			// 乱数に基づいてθとφの値を決め、局所座標系でレイの追跡方向を決定する。
+			const float xi1 = frand();
+			const float xi2 = frand();
+			float phi = 2.f * pi<float>() * xi1;
+			float theta = acos(pow(xi2, 1.f/(shiness+1)));
+			// 通常座標系でのレイの追跡方向
+			const vec3 traceDirLocal = vec3(cos(phi) * cos(theta), sin(theta), sin(phi) * cos(theta));
+			const vec3 traceDir = normalize(traceDirLocal);
+
+			// ハーフベクトルの計算（これは局所座標系で計算されているのか？）
+			const vec3 half = (-ray.getUnitDir() + traceDir) / length(-ray.getUnitDir() + traceDir);
+
+			// const vec3 weight = (specularCoeff * ((shiness + 2.f) / (shiness + 1.f)) * 4.f * std::max(glm::dot(traceDir, half), 0.f));
+			// const vec3 weight = (specularCoeff * ((shiness + 2.f) / (shiness + 1.f)) * glm::dot(4.f * traceDir, half));
+			const vec3 weight = (specularCoeff * ((shiness + 2.f) / (shiness + 1.f)) * 4.f * glm::dot(traceDir, half));
+			return weight * traceRec(Ray(record.m_HitPos, traceDir), recursionDepth + 1);
+		} else {
+			// ****計算しない****
+			// return g_Scene.getBackgroundColor(ray);
+			return vec3(0.f);
+		}
 	}
 	else if (matType == Material::Perfect_Specular_Type)
 	{
-		const vec3& specularCoeff = ((PerfectSpecularMaterial*)record.m_pMaterial)->getSpecularCoeff();
+		const vec3 &specularCoeff = ((PerfectSpecularMaterial *)record.m_pMaterial)->getSpecularCoeff();
 		const float russianRouletteProbability = (recursionDepth > s_MinRecursionDepth) ? std::max(specularCoeff.x, std::max(specularCoeff.y, specularCoeff.z)) : 1.f;
 
 		if (frand() >= russianRouletteProbability)
 			return g_Scene.getBackgroundColor(ray);
 
 		const vec3 reflectDir = normalize(reflect(ray.getUnitDir(), record.m_Normal));
-	
+
 		const vec3 incomingRadiance = traceRec(Ray(record.m_HitPos, reflectDir), recursionDepth + 1);
 		const vec3 weight = specularCoeff / russianRouletteProbability;
 
@@ -212,7 +296,7 @@ glm::vec3 PathTracer::traceRec(const Ray& ray, int recursionDepth)
 	}
 	else if (matType == Material::Specular_Refraction_Type)
 	{
-		const vec3& specularCoeff = ((SpecularRefractionMaterial*)record.m_pMaterial)->getSpecularCoeff();
+		const vec3 &specularCoeff = ((SpecularRefractionMaterial *)record.m_pMaterial)->getSpecularCoeff();
 		const float russianRouletteProbability = (recursionDepth > s_MinRecursionDepth) ? std::max(specularCoeff.x, std::max(specularCoeff.y, specularCoeff.z)) : 1.f;
 
 		if (frand() >= russianRouletteProbability)
@@ -223,7 +307,7 @@ glm::vec3 PathTracer::traceRec(const Ray& ray, int recursionDepth)
 		// is the ray entering or outgoing the ball?
 		const bool isEntering = _dot < 0.f;
 
-		const float eta = ((SpecularRefractionMaterial*)record.m_pMaterial)->getRefractionIndex();
+		const float eta = ((SpecularRefractionMaterial *)record.m_pMaterial)->getRefractionIndex();
 		const float relativeIndex = isEntering ? 1 / eta : eta;
 
 		// Schlick's Fresnel approximation
@@ -250,8 +334,7 @@ glm::vec3 PathTracer::traceRec(const Ray& ray, int recursionDepth)
 
 		if (recursionDepth <= 2)
 		{
-			const vec3 incomingRadiance = Re * traceRec(Ray(record.m_HitPos, reflectVec), recursionDepth + 1)
-										+ Tr * traceRec(Ray(record.m_HitPos, refractVec), recursionDepth + 1);
+			const vec3 incomingRadiance = Re * traceRec(Ray(record.m_HitPos, reflectVec), recursionDepth + 1) + Tr * traceRec(Ray(record.m_HitPos, refractVec), recursionDepth + 1);
 
 			const vec3 weight = specularCoeff / russianRouletteProbability;
 
@@ -285,7 +368,8 @@ glm::vec3 PathTracer::traceRec(const Ray& ray, int recursionDepth)
 
 void PathTracer::updateFrameBufferTexture()
 {
-	if (!m_FrameBufferTexID) glGenTextures(1, &m_FrameBufferTexID);
+	if (!m_FrameBufferTexID)
+		glGenTextures(1, &m_FrameBufferTexID);
 	glBindTexture(GL_TEXTURE_2D, m_FrameBufferTexID);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -308,7 +392,7 @@ void PathTracer::renderIntermediateFrame()
 	}
 }
 
-void PathTracer::calcLocalCoordinateSystem(const vec3& normal, const vec3& inDir, vec3& xLocal, vec3& yLocal, vec3& zLocal) const
+void PathTracer::calcLocalCoordinateSystem(const vec3 &normal, const vec3 &inDir, vec3 &xLocal, vec3 &yLocal, vec3 &zLocal) const
 {
 #if 0
 	yLocal = dot(normal, inDir) < 0.f ? normal : -normal;

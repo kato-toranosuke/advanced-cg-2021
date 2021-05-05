@@ -52,7 +52,8 @@ PathTracer g_PathTracer;
 Scene g_Scene;
 
 glm::vec2 g_PrevMouse;
-ArcballCamera g_Camera(glm::vec3(0.5f, 4.f, 5.f), glm::vec3(0.f, 1.5f, 0.f), glm::vec3(0, 1, 0));
+// ArcballCamera g_Camera(glm::vec3(0.5f, 4.f, 5.f), glm::vec3(0.f, 1.5f, 0.f), glm::vec3(0, 1, 0));
+ArcballCamera g_Camera(glm::vec3(-6, 2, 0), glm::vec3(0, 1.5, 0), glm::vec3(0, 1, 0));
 
 glm::mat4 g_ProjMatrix = glm::perspective(45.f, g_WindowWidth / float(g_WindowHeight), 0.1f, 200.f);
 
