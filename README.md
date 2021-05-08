@@ -12,3 +12,6 @@ day01の課題を完成させた。<br>
 ### v3.0
 day02の課題を完成させた。<br>
 レポートはlatexで作成。
+
+### v4.0
+day03の課題。Lambert BRDF, Blinn-Phong BRDFの重点サンプリングを用いたパストレーシング。
