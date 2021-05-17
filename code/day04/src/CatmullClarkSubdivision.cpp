@@ -4,7 +4,7 @@
 using namespace std;
 using namespace glm;
 
-void CatmullClarkSubdivision::subdivide(PolygonMesh& mesh, int nSubdiv)
+void CatmullClarkSubdivision::subdivide(PolygonMesh &mesh, int nSubdiv)
 {
 	if (mesh.getVertices().empty() || mesh.getFaceIndices().empty())
 	{
@@ -22,9 +22,9 @@ void CatmullClarkSubdivision::subdivide(PolygonMesh& mesh, int nSubdiv)
 	mesh.calcVertexNormals();
 }
 
-HalfEdge::Mesh CatmullClarkSubdivision::apply(HalfEdge::Mesh& mesh)
+HalfEdge::Mesh CatmullClarkSubdivision::apply(HalfEdge::Mesh &mesh)
 {
-	return mesh;	// TODO: delete this line
+	// return mesh;	// TODO: delete this line
 
 	HalfEdge::Mesh newMesh;
 
@@ -40,18 +40,20 @@ HalfEdge::Mesh CatmullClarkSubdivision::apply(HalfEdge::Mesh& mesh)
 		newMesh.addVertex();
 
 	// Step 1: generate face centroids
-
+	unordered_map<long, HalfEdge::Vertex *> newCentroidDict;
 	for (int fi = 0; fi < nOldFaces; ++fi)
 	{
 		auto oldFace = mesh.faces[fi];
 		auto newFaceCentroid = newMesh.addVertex();
 		// TODO: calculate the positions of face centroids
+		newFaceCentroid->position = oldFace->calcCentroidPosition();
+		newCentroidDict[oldFace->id] = newFaceCentroid;
 	}
 
 	// Step 2: create odd (i.e., new) vertices by splitting half edges
 
-	unordered_map<long, HalfEdge::Vertex*> newEdgeMidpointDict;
-	unordered_map<long, pair<HalfEdge::HalfEdge*, HalfEdge::HalfEdge*>> newHalfEdgeDict;
+	unordered_map<long, HalfEdge::Vertex *> newEdgeMidpointDict;
+	unordered_map<long, pair<HalfEdge::HalfEdge *, HalfEdge::HalfEdge *>> newHalfEdgeDict;
 
 	for (int hi = 0; hi < nOldHalfEdges; ++hi)
 	{
@@ -60,12 +62,13 @@ HalfEdge::Mesh CatmullClarkSubdivision::apply(HalfEdge::Mesh& mesh)
 		vec3 startVertexPosition = oldHE->getStartVertex()->position;
 		vec3 endVertexPosition = oldHE->getEndVertex()->position;
 
-		HalfEdge::Vertex* edgeMidpoint = nullptr;
+		HalfEdge::Vertex *edgeMidpoint = nullptr;
 
-		if (oldHE->pPair == nullptr)	// on boundary
+		if (oldHE->pPair == nullptr) // on boundary
 		{
 			edgeMidpoint = newMesh.addVertex();
 			// TODO: calculate the position of edge midpoint
+			edgeMidpoint->position = 1.f / 2.f * (startVertexPosition + endVertexPosition);
 		}
 		else
 		{
@@ -75,6 +78,7 @@ HalfEdge::Mesh CatmullClarkSubdivision::apply(HalfEdge::Mesh& mesh)
 			{
 				edgeMidpoint = newMesh.addVertex();
 				// TODO: calculate the position of edge midpoint
+				edgeMidpoint->position = 1.f / 4.f * (startVertexPosition + endVertexPosition + oldHE->pFace->calcCentroidPosition() + oldHE->pPair->pFace->calcCentroidPosition());
 			}
 			else
 			{
@@ -108,8 +112,8 @@ HalfEdge::Mesh CatmullClarkSubdivision::apply(HalfEdge::Mesh& mesh)
 
 			if (iter != newHalfEdgeDict.end())
 			{
-				HalfEdge::HalfEdge* pairFormerHE = iter->second.first;
-				HalfEdge::HalfEdge* pairLatterHE = iter->second.second;
+				HalfEdge::HalfEdge *pairFormerHE = iter->second.first;
+				HalfEdge::HalfEdge *pairLatterHE = iter->second.second;
 
 				HalfEdge::Helper::SetPair(pairFormerHE, latterHE);
 				HalfEdge::Helper::SetPair(pairLatterHE, formerHE);
@@ -127,6 +131,77 @@ HalfEdge::Mesh CatmullClarkSubdivision::apply(HalfEdge::Mesh& mesh)
 
 		// TODO: calculate the new vertex position
 		// c.f., HalfEdge::Vertex::countValence() in HalfEdgeDataStructure.cpp
+
+		int valence = 0;
+		bool onBoundary = false;
+		auto he = oldVertex->pHalfEdge;
+
+		vector<HalfEdge::Vertex *> midpoints; // 中点を格納
+		vector<HalfEdge::Vertex *> centroids; // 重心を格納
+
+		do
+		{
+			++valence;
+
+			// 中点を取得
+			auto midpoint = newEdgeMidpointDict.find(he->id)->second;
+			midpoints.push_back(midpoint);
+			// 重心を取得
+			auto centroid = newCentroidDict.find(he->pFace->id)->second;
+			centroids.push_back(centroid);
+
+			if (he->pPair == nullptr)
+			{
+				onBoundary = true;
+				break;
+			}
+
+			he = he->pPair->pNext;
+		} while (he != oldVertex->pHalfEdge);
+
+		if (onBoundary)
+		{
+			he = oldVertex->pHalfEdge->pPrev;
+
+			do
+			{
+				++valence;
+
+				auto midpoint = newEdgeMidpointDict.find(he->id)->second;
+				midpoints.push_back(midpoint);
+
+				auto centroid = newCentroidDict.find(he->pFace->id)->second;
+				centroids.push_back(centroid);
+
+				if (he->pPair == nullptr)
+				{
+					break;
+				}
+
+				he = he->pPair->pPrev;
+			} while (he != oldVertex->pHalfEdge);
+		}
+
+		// even vertexの座標を計算
+		// 境界線上にある場合
+		if (onBoundary)
+		{
+			newVertex->position = 3.f / 4.f * oldVertexPosition + 1.f / 8.f * (oldVertex->pHalfEdge->getEndVertex()->position + oldVertex->pHalfEdge->pPrev->pStartVertex->position);
+		}
+		// 境界線以外にある場合
+		else
+		{
+			vec3 R, S; // R:辺の中点の平均座標 ,S:面の重心の平均座標
+			for (size_t i = 0; i < valence; i++)
+			{
+				R += midpoints[i]->position;
+				S += centroids[i]->position;
+			}
+			R /= (float)valence;
+			S /= (float)valence;
+
+			newVertex->position = (valence - 3.f) / valence * oldVertexPosition + 4.f / valence * R - 1.f / valence * S;
+		}
 	}
 
 	// Step 4: set up new faces
@@ -138,8 +213,82 @@ HalfEdge::Mesh CatmullClarkSubdivision::apply(HalfEdge::Mesh& mesh)
 
 		// TODO: update the half-edge data structure within each old face
 		// HINT: use the following std::vector to store temporal data and process step by step
-		//vector<HalfEdge::HalfEdge*> tmpToCentroidHalfEdges;
-		//vector<HalfEdge::Face*> tmpNewFaces;
+		vector<HalfEdge::HalfEdge *> tmpToCentroidHalfEdges;
+		vector<HalfEdge::Face *> tmpNewFaces;
+
+		// faceの設定
+		auto he = oldFace->pHalfEdge;
+		int k = 0;
+		do
+		{
+			auto newFace = newMesh.addFace();
+
+			tmpNewFaces.push_back(newFace);
+
+			he = he->pNext;
+			k++;
+		} while (he != oldFace->pHalfEdge);
+
+		// HalfEdgeの設定(同一面内)
+		he = oldFace->pHalfEdge;
+		int i = 0;
+		do
+		{
+			// 中点→重心に向かうhalf edgeの追加
+			auto toCentroidHalfEdge = newMesh.addHalfEdge();
+			// 重心→中点に向かうhalf edgeの追加
+			auto toMidpointHalfEdge = newMesh.addHalfEdge();
+
+			// 始点となるvertexを設定
+			auto midpoint = newEdgeMidpointDict.find(he->pPrev->id)->second;
+			toCentroidHalfEdge->pStartVertex = midpoint;
+
+			toMidpointHalfEdge->pStartVertex = centroidVertex;
+
+			// 自身が所属するFace
+			auto pNewFace = tmpNewFaces[i];
+			toCentroidHalfEdge->pFace = pNewFace;
+			toMidpointHalfEdge->pFace = pNewFace;
+
+			auto he1 = pNewFace->pHalfEdge;
+			auto he2 = newHalfEdgeDict.find(he->pPrev->id)->second.second;
+			he1->pFace = pNewFace;
+			he2->pFace = pNewFace;
+
+			// pNext
+			toCentroidHalfEdge->pNext = toMidpointHalfEdge;
+			toMidpointHalfEdge->pNext = he2;
+			he2->pNext = he1;
+			he1->pNext = toCentroidHalfEdge;
+
+			// pPrev
+			toCentroidHalfEdge->pPrev = he1;
+			toMidpointHalfEdge->pPrev = toCentroidHalfEdge;
+			he2->pPrev = toMidpointHalfEdge;
+			he1->pPrev = he2;
+
+			// 一時保存配列への追加
+			tmpToCentroidHalfEdges.push_back(toCentroidHalfEdge);
+
+			// faceに含まれるいずれかのHalfEdgeの一本を登録
+			pNewFace->pHalfEdge = toMidpointHalfEdge;
+
+			he = he->pNext;
+			i++;
+		} while (he != oldFace->pHalfEdge);
+
+		// pairの設定
+		auto olfHE = oldFace->pHalfEdge;
+		for (int i = 0; i < k; i++)
+		{
+			auto toMidpointHE = tmpNewFaces[i]->pHalfEdge;
+
+			int j = i == 0 ? k : i - 1;
+			auto toCentroidHE = tmpToCentroidHalfEdges[j];
+
+			toMidpointHE->pPair = toCentroidHE;
+			toCentroidHE->pPair = toMidpointHE;
+		}
 	}
 
 	cerr << __FUNCTION__ << ": check data consistency" << endl;
