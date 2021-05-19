@@ -229,7 +229,7 @@ HalfEdge::Mesh CatmullClarkSubdivision::apply(HalfEdge::Mesh &mesh)
 			k++;
 		} while (he != oldFace->pHalfEdge);
 
-		// HalfEdgeの設定(同一面内)
+		// HalfEdgeの設定(同一面内)(ここが問題)
 		he = oldFace->pHalfEdge;
 		int i = 0;
 		do
@@ -240,9 +240,11 @@ HalfEdge::Mesh CatmullClarkSubdivision::apply(HalfEdge::Mesh &mesh)
 			auto toMidpointHalfEdge = newMesh.addHalfEdge();
 
 			// 始点となるvertexを設定
-			auto midpoint = newEdgeMidpointDict.find(he->pPrev->id)->second;
+			// 中心→重心
+			// auto midpoint = newEdgeMidpointDict.find(he->pPrev->id)->second;
+			auto midpoint = newEdgeMidpointDict.find(he->id)->second;
 			toCentroidHalfEdge->pStartVertex = midpoint;
-
+			// 重心→中心
 			toMidpointHalfEdge->pStartVertex = centroidVertex;
 
 			// 自身が所属するFace
@@ -250,10 +252,14 @@ HalfEdge::Mesh CatmullClarkSubdivision::apply(HalfEdge::Mesh &mesh)
 			toCentroidHalfEdge->pFace = pNewFace;
 			toMidpointHalfEdge->pFace = pNewFace;
 
-			auto he1 = pNewFace->pHalfEdge;
+			auto he1 = newHalfEdgeDict.find(he->id)->second.first;
 			auto he2 = newHalfEdgeDict.find(he->pPrev->id)->second.second;
 			he1->pFace = pNewFace;
 			he2->pFace = pNewFace;
+
+			// 中点・重心の頂点に関してその頂点を始点とするいずれかのHEを登録
+			midpoint->pHalfEdge = toCentroidHalfEdge;
+			centroidVertex->pHalfEdge = toMidpointHalfEdge;
 
 			// pNext
 			toCentroidHalfEdge->pNext = toMidpointHalfEdge;
@@ -283,7 +289,7 @@ HalfEdge::Mesh CatmullClarkSubdivision::apply(HalfEdge::Mesh &mesh)
 		{
 			auto toMidpointHE = tmpNewFaces[i]->pHalfEdge;
 
-			int j = i == 0 ? k : i - 1;
+			int j = (i == 0) ? (k - 1) : (i - 1);
 			auto toCentroidHE = tmpToCentroidHalfEdges[j];
 
 			toMidpointHE->pPair = toCentroidHE;
@@ -291,7 +297,7 @@ HalfEdge::Mesh CatmullClarkSubdivision::apply(HalfEdge::Mesh &mesh)
 		}
 	}
 
-	cerr << __FUNCTION__ << ": check data consistency" << endl;
+	std::cerr << __FUNCTION__ << ": check data consistency" << endl;
 	newMesh.checkDataConsistency();
 
 	return move(newMesh);
