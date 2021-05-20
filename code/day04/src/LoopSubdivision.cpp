@@ -129,6 +129,8 @@ HalfEdge::Mesh LoopSubdivision::apply(HalfEdge::Mesh &mesh)
 		auto he = oldVertex->pHalfEdge;
 		bool onBoundary = false; // 境界線が含まれるかを格納
 
+		std::cout << oldVertex->onBoundary() << endl;
+
 		// 注目点の周辺の点の座標を取得する。
 		vector<vec3> peripheral_vertices_pos; // 周囲の点の座標を格納
 		do
@@ -173,6 +175,7 @@ HalfEdge::Mesh LoopSubdivision::apply(HalfEdge::Mesh &mesh)
 			if (onBoundary)
 			{
 				newVertex->position = 3.f / 4.f * oldVertexPosition + 1.f / 8.f * oldVertex->pHalfEdge->getEndVertex()->position + 1.f / 8.f * oldVertex->pHalfEdge->pPrev->pStartVertex->position;
+				std::cout << "boundary" << endl;
 			}
 			// 境界線や折り目以外の場合
 			else
