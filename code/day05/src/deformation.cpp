@@ -366,7 +366,7 @@ glm::vec2 rxMeshDeform2D::affineDeformation(const glm::vec2 &v, const glm::vec2 
 		const glm::vec2 &p = m_vP[i];
 		// 固定点と計算点の間の距離に基づく重み
 		double dist = glm::length2(p - v);
-		float w = (dist > 1.0e-6) ? 1.0f / pow(dist, alpha) : 0.0f;
+		float w = (dist > 1.0e-6) ? 1.0f / pow(dist, 2.0f * alpha) : 0.0f;
 		// 重心を中心とした制御点の相対座標
 		const glm::vec2 p_hat = p - pc;
 
@@ -376,9 +376,15 @@ glm::vec2 rxMeshDeform2D::affineDeformation(const glm::vec2 &v, const glm::vec2 
 		WP[1][1] += p_hat.y * w * p_hat.y;
 	}
 
-	// 逆行列を計算
-	glm::mat2 invWP = glm::mat2(0.f);
-	invWP = glm::inverse(WP);
+	// 行列式
+	double det = glm::determinant(WP);
+	// 正則性のチェック
+	if (det < 1.0e-6)
+	{
+		return v;
+	}
+	// 逆行列の計算
+	glm::mat2 invWP = glm::inverse(WP);
 	// float m = 1.f / glm::determinant(WP);
 	// float m = 1.f / (WP[0][0] * WP[1][1] - WP[1][0] * WP[0][1]);
 
@@ -387,7 +393,7 @@ glm::vec2 rxMeshDeform2D::affineDeformation(const glm::vec2 &v, const glm::vec2 
 	// invWP[1][0] = m * -WP[1][0];
 	// invWP[1][1] = m * WP[0][0];
 
-	// Aj*qj部分の計算
+	// fa(v)を計算
 	glm::vec2 fa = glm::vec2(0.f);
 	for (int k = 0; k < m_iNfix; ++k)
 	{										 // 制御点数(m_iNfix)でループを回す
@@ -401,10 +407,9 @@ glm::vec2 rxMeshDeform2D::affineDeformation(const glm::vec2 &v, const glm::vec2 
 		// 固定点と計算点の間の距離に基づく重み
 		const glm::vec2 p = m_vP[j];
 		double dist = glm::length2(p - v);
-		float w = (dist > 1.0e-6) ? 1.0f / pow(dist, alpha) : 0.0f;
+		float w = (dist > 1.0e-6) ? 1.0f / pow(dist, 2.0f * alpha) : 0.0f;
 
 		// Ajを計算する
-		// float w = 1.f / pow((m_vP[j] - v).length(), 2.f * alpha);
 		glm::vec2 B = v - pc;
 		float A = w * ((B.x * invWP[0].x + B.y * invWP[0].y) * p_hat.x + (B.x * invWP[1].x + B.y * invWP[1].y) * p_hat.y);
 
@@ -430,8 +435,58 @@ glm::vec2 rxMeshDeform2D::similarityDeformation(const glm::vec2 &v, const glm::v
 	// - μsを先に計算してから変形後の頂点位置を計算
 	// - 行列A_iの前計算は今回は行わないでもよい
 
+	// μsを計算
+	float ms = 0.0f;
+	for (size_t k = 0; k < m_iNfix; k++)
+	{
+		int i = m_vFix[k];
+		const glm::vec2 p = m_vP[i];
+		const glm::vec2 p_hat = p - pc;
+
+		// 重みw
+		double dist = glm::length2(p - v);
+		float w = (dist > 1.0e-6) ? 1.0f / pow(dist, 2.0f * alpha) : 0.0f;
+
+		// μsに加算
+		ms += w * (p_hat.x * p_hat.x + p_hat.y * p_hat.y);
+	}
+
+	// fs(v)を計算
+	glm::vec2 fsv = glm::vec2(0.0f);
+
+	glm::vec2 vecVPc = v - pc;
+	glm::mat2 matVPc;
+	matVPc[0][0] = vecVPc.x;
+	matVPc[0][1] = vecVPc.y;
+	matVPc[1][0] = vecVPc.y;
+	matVPc[1][1] = -vecVPc.x;
+	glm::mat2 trnsMatVPc = glm::transpose(matVPc);
+
+	for (int k = 0; k < m_iNfix; k++)
+	{
+		int i = m_vFix[k];
+		const glm::vec2 p = m_vP[i];
+		const glm::vec2 p_hat = p - pc;
+		const glm::vec2 q_hat = m_vX[i] - qc;
+
+		// 重みw
+		double dist = glm::length2(p - v);
+		float w = (dist > 1.0e-6) ? 1.0f / pow(dist, 2.0f * alpha) : 0.0f;
+
+		// 変位行列A
+		glm::mat2 matP;
+		matP[0][0] = p_hat.x;
+		matP[0][1] = p_hat.y;
+		matP[1][0] = p_hat.y;
+		matP[1][1] = -p_hat.x;
+
+		glm::mat2 A = w * matP * trnsMatVPc;
+
+		// 加算
+		fsv += glm::transpose((1.0f / ms) * A) * q_hat;
+	}
 	// 変形後の頂点vの座標
-	glm::vec2 fsv = v; // ここも書き換えること
+	fsv += qc;
 
 	return fsv;
 }
