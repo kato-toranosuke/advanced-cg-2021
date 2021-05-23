@@ -504,8 +504,63 @@ glm::vec2 rxMeshDeform2D::rigidDeformation(const glm::vec2 &v, const glm::vec2 &
 	// - μfを先に計算してから変形後の頂点位置を計算
 	// - 行列A_iの前計算は今回は行わないでもよい
 
+	// μfを計算
+	// mf = sqrt(A^2 + B^2)とする
+	float A = 0.0f;
+	float B = 0.0f;
+	for (size_t k = 0; k < m_iNfix; k++)
+	{
+		int i = m_vFix[k];
+		const glm::vec2 p = m_vP[i];
+		const glm::vec2 p_hat = p - pc;
+		const glm::vec2 q_hat = m_vX[i] - qc;
+
+		// 重みw
+		double dist = glm::length2(p - v);
+		float w = (dist > 1.0e-6) ? 1.0f / pow(dist, 2.0f * alpha) : 0.0f;
+
+		A += w * (q_hat.x * p_hat.x + q_hat.y * p_hat.y);
+		B += w * (q_hat.x * -p_hat.y + q_hat.y * p_hat.x);
+	}
+	const float mf = glm::sqrt(A * A + B * B);
+
+	// fr(v)を計算
+	glm::vec2 frv = glm::vec2(0.0f);
+
+	glm::vec2 vecVPc = v - pc;
+	glm::mat2 matVPc;
+	matVPc[0][0] = vecVPc.x;
+	matVPc[0][1] = vecVPc.y;
+	matVPc[1][0] = vecVPc.y;
+	matVPc[1][1] = -vecVPc.x;
+	glm::mat2 trnsMatVPc = glm::transpose(matVPc);
+
+	for (int k = 0; k < m_iNfix; k++)
+	{
+		int i = m_vFix[k];
+		const glm::vec2 p = m_vP[i];
+		const glm::vec2 p_hat = p - pc;
+		const glm::vec2 q_hat = m_vX[i] - qc;
+
+		// 重みw
+		double dist = glm::length2(p - v);
+		float w = (dist > 1.0e-6) ? 1.0f / pow(dist, 2.0f * alpha) : 0.0f;
+
+		// 変位行列A
+		glm::mat2 matP;
+		matP[0][0] = p_hat.x;
+		matP[0][1] = p_hat.y;
+		matP[1][0] = p_hat.y;
+		matP[1][1] = -p_hat.x;
+
+		glm::mat2 A = w * matP * trnsMatVPc;
+
+		// 加算
+		frv += glm::transpose((1.0f / mf) * A) * q_hat;
+	}
+
 	// 変形後の頂点vの座標
-	glm::vec2 frv = v; // ここも書き換えること
+	frv += qc; // ここも書き換えること
 
 	return frv;
 }
