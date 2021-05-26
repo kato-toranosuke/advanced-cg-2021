@@ -385,13 +385,6 @@ glm::vec2 rxMeshDeform2D::affineDeformation(const glm::vec2 &v, const glm::vec2 
 	}
 	// 逆行列の計算
 	glm::mat2 invWP = glm::inverse(WP);
-	// float m = 1.f / glm::determinant(WP);
-	// float m = 1.f / (WP[0][0] * WP[1][1] - WP[1][0] * WP[0][1]);
-
-	// invWP[0][0] = m * WP[1][1];
-	// invWP[0][1] = m * -WP[0][1];
-	// invWP[1][0] = m * -WP[1][0];
-	// invWP[1][1] = m * WP[0][0];
 
 	// fa(v)を計算
 	glm::vec2 fa = glm::vec2(0.f);
