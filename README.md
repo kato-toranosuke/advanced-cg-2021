@@ -15,3 +15,14 @@ day02の課題を完成させた。<br>
 
 ### v4.0
 day03の課題。Lambert BRDF, Blinn-Phong BRDFの重点サンプリングを用いたパストレーシング。
+
+### v5.0
+- day04<br>
+  細分割曲面の実装を行った。なお、方法は以下の２つ。
+  - Loop Subdivision
+  - Catmull-Clark Subdivision
+- day05<br>
+  MLS変形の実装。以下の３種類の変形を行った。
+  - Affine Deformations
+  - Similarity Deformations
+  - Rigid Deformations
