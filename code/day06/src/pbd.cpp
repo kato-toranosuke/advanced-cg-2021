@@ -706,11 +706,11 @@ void ElasticPBD::projectStretchingConstraint(float ks)
 
 		// ----課題ここから----
 		// 重みの計算
-		float w1 = 1.f / m1;
-		float w2 = 1.f / m2;
+		float w1 = 1.0f / m1;
+		float w2 = 1.0f / m2;
 
 		// p1-p2ベクトルの長さ
-		float vecLength = (p1 - p2).length();
+		float vecLength = glm::length(p1 - p2);
 		// エッジの長さが閾値よりも小さい場合はスキップする。（ゼロ割り対策）
 		if (vecLength < glm::epsilon<float>())
 			continue;
@@ -785,6 +785,47 @@ void ElasticPBD::projectBendingConstraint(float ks)
 		glm::vec3 dp1(0.0f), dp2(0.0f), dp3(0.0f), dp4(0.0f);
 
 		// ----課題ここから----
+		// n1, n2の正規化前のベクトルを_n1, _n2とする。
+		auto _n1 = glm::cross(p2, p3);
+		auto _n2 = glm::cross(p2, p4);
+		// _n1, _n2の長さ
+		float _n1Length = glm::length(_n1);
+		float _n2Length = glm::length(_n2);
+		// _n1, _n2の大きさによってゼロ割が発生しないか確認。
+		if (_n1Length < glm::epsilon<float>() || _n2Length < glm::epsilon<float>())
+			continue;
+
+		// n1, n2を計算
+		auto n1 = glm::normalize(_n1);
+		auto n2 = glm::normalize(_n2);
+
+		// dを計算
+		float d = min(max(glm::dot(n1, n2), -1.0f), 1.0f);
+
+		// q1~q4
+		auto q3 = (glm::cross(p2, n2) + glm::cross(n1, p2) * d) / _n1Length;
+		auto q4 = (glm::cross(p2, n1) + glm::cross(n2, p2) * d) / _n2Length;
+		auto q2 = -(glm::cross(p3, n2) + glm::cross(n1, p3) * d) / _n1Length - (glm::cross(p4, n1) + glm::cross(n2, p4) * d) / _n2Length;
+		auto q1 = -q2 - q3 - q4;
+
+		// 重み
+		float w1 = 1.0f / m1;
+		float w2 = 1.0f / m2;
+		float w3 = 1.0f / m3;
+		float w4 = 1.0f / m4;
+
+		// dpiの計算に必要な定数部分の事前計算
+		float qLengthSqrSum = pow(glm::length(q1), 2.0) + pow(glm::length(q2), 2.0) + pow(glm::length(q3), 2.0) + pow(glm::length(q4), 2.0);
+		// ゼロ割予防
+		if (qLengthSqrSum < glm::epsilon<float>())
+			continue;
+		auto CP = -4.0f / (w1 + w2 + w3 + w4) * sqrt(1.0f - d * d) * (acos(d) - phi0) / qLengthSqrSum;
+
+		// dp1~dp4
+		dp1 = w1 * CP * q1;
+		dp2 = w2 * CP * q2;
+		dp3 = w3 * CP * q3;
+		dp4 = w4 * CP * q4;
 
 		// ----課題ここまで----
 
