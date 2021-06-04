@@ -914,7 +914,8 @@ int CharacterAnimation::skinningLBS(vector<glm::vec3> &vrts, const vector<map<in
 			float wij = static_cast<float>(itr->second); // 重み
 
 			// 正則判定
-			if (glm::determinant(m_joints[j].B) == 0.0)
+			// if (glm::determinant(m_joints[j].B) == 0.0)
+			if (glm::determinant(m_joints[j].B) < glm::epsilon<float>())
 				continue;
 
 			R += wij * m_joints[j].W * glm::inverse(m_joints[j].B);
@@ -971,6 +972,15 @@ int CharacterAnimation::skinningDQS(vector<glm::vec3> &vrts, const vector<map<in
 		glm::vec3 v_new = v; // 更新後のスキンメッシュ頂点位置
 
 		// ----課題ここから----
+		// 頂点vに対応する全ジョイントにおけるループ
+		map<int, double>::const_iterator itr = weights[i].begin();
+		for (; itr != weights[i].end(); ++itr)
+		{
+			int j = itr->first;													 // ジョイント番号
+			float wij = static_cast<float>(itr->second); // 重み
+
+			// 正則判定
+				}
 
 		// ----課題ここまで----
 
