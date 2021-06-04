@@ -817,7 +817,7 @@ void ElasticPBD::projectBendingConstraint(float ks)
 		// dpiの計算に必要な定数部分の事前計算
 		float qLengthSqrSum = pow(glm::length(q1), 2.0) + pow(glm::length(q2), 2.0) + pow(glm::length(q3), 2.0) + pow(glm::length(q4), 2.0);
 		// ゼロ割予防
-		if (qLengthSqrSum < glm::epsilon<float>())
+		if (qLengthSqrSum < glm::epsilon<float>() || (w1 + w2 + w3 + w4) < glm::epsilon<float>())
 			continue;
 		auto CP = -4.0f / (w1 + w2 + w3 + w4) * sqrt(1.0f - d * d) * (acos(d) - phi0) / qLengthSqrSum;
 
@@ -881,6 +881,32 @@ void ElasticPBD::projectVolumeConstraint(float ks)
 		glm::vec3 dp1(0.0f), dp2(0.0f), dp3(0.0f), dp4(0.0f);
 
 		// ----課題ここから----
+		// 重み
+		float w1 = 1.0f / m1;
+		float w2 = 1.0f / m2;
+		float w3 = 1.0f / m3;
+		float w4 = 1.0f / m4;
+
+		// q1~q4
+		auto q1 = glm::cross(p2 - p3, p4 - p3);
+		auto q2 = glm::cross(p3 - p1, p4 - p1);
+		auto q3 = glm::cross(p1 - p2, p4 - p2);
+		auto q4 = glm::cross(p2 - p1, p3 - p1);
+
+		// dpiの計算式の定数部分
+		float wsum = w1 + w2 + w3 + w4;
+		float qLengthSqrSum = pow(glm::length(q1), 2.0) + pow(glm::length(q2), 2.0) + pow(glm::length(q3), 2.0) + pow(glm::length(q4), 2.0);
+
+		if (wsum < glm::epsilon<float>() || qLengthSqrSum < glm::epsilon<float>())
+			continue;
+
+		auto CP = -(calVolume(p1, p2, p3, p4) - V0) / (wsum * qLengthSqrSum);
+
+		// dp1~dp4
+		dp1 = w1 * CP * q1;
+		dp2 = w2 * CP * q2;
+		dp3 = w3 * CP * q3;
+		dp4 = w4 * CP * q4;
 
 		// ----課題ここまで----
 
