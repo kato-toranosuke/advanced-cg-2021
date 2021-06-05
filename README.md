@@ -33,3 +33,6 @@ day06の課題。弾性変形シミュレーションについて学び、基本
 - Stretching Constraint
 - Bending Constraint
 - Volume Constraint
+
+### v7.0
+day07の課題。キャラクターアニメーションにおけるスキニングについて学び、スキニング手法であるLBS及びDQSを実装する。
