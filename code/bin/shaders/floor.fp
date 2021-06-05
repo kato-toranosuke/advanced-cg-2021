@@ -1,4 +1,4 @@
-// shadertype=glsl
+﻿// shadertype=glsl
 /*!
   @file shading.fp
 	
@@ -7,6 +7,7 @@
   @author Makoto Fujisawa
   @date 2011
 */
+// FILE --shading.fp--
 #version 120
 
 
