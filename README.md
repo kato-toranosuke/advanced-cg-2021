@@ -26,3 +26,10 @@ day03の課題。Lambert BRDF, Blinn-Phong BRDFの重点サンプリングを用
   - Affine Deformations
   - Similarity Deformations
   - Rigid Deformations
+
+### v6.0
+day06の課題。弾性変形シミュレーションについて学び、基本的な位置ベース手法（PBD）を実装した。<br>
+以下の制約条件についての位置修正量を計算した。
+- Stretching Constraint
+- Bending Constraint
+- Volume Constraint
