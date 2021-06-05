@@ -308,23 +308,117 @@ macOS Big Sur ver11.3.1
 \end{lstlisting}
 
 \subsection{実行結果}
-格子状メッシュかつ、alpha=1.00の条件でプログラムを実行した結果は以下のようになった。
+各形状を初期状態からシミュレーションを開始した様子を以下に示す。画像の番号は時系列順になっている。（数字の小さい方から大きい方へ時間が流れている。）
+\subsubsection{rod(1D)}
+\begin{figure}[htbp]
+  \begin{minipage}{0.33\hsize}
+    \begin{center}
+      \includegraphics[width=45mm]{img/rod_00.png}
+      \caption{rod\_00.png}
+    \end{center}
+  \end{minipage}
+  \begin{minipage}{0.33\hsize}
+    \begin{center}
+      \includegraphics[width=45mm]{img/rod_01.png}
+      \caption{rod\_01.png}
+    \end{center}
+  \end{minipage}
+  \begin{minipage}{0.33\hsize}
+    \begin{center}
+      \includegraphics[width=45mm]{img/rod_02.png}
+      \caption{rod\_02.png}
+    \end{center}
+  \end{minipage}
+\end{figure}
+
+\begin{figure}[htbp]
+  \begin{minipage}{0.33\hsize}
+    \begin{center}
+      \includegraphics[width=45mm]{img/rod_03.png}
+      \caption{rod\_03.png}
+    \end{center}
+  \end{minipage}
+  \begin{minipage}{0.33\hsize}
+    \begin{center}
+      \includegraphics[width=45mm]{img/rod_04.png}
+      \caption{rod\_04.png}
+    \end{center}
+  \end{minipage}
+\end{figure}
+
+\subsubsection{cloth(2D)}
+wind=0.10でシミュレーションした。
 \begin{figure}[H]
-  \centering
-  \includegraphics[width=6cm]{./img/affine.png}
-  \caption{Affine Deformationの実行結果}
+  \begin{minipage}{0.33\hsize}
+    \begin{center}
+      \includegraphics[width=45mm]{img/cloth_00.png}
+      \caption{cloth\_00.png}
+    \end{center}
+  \end{minipage}
+  \begin{minipage}{0.33\hsize}
+    \begin{center}
+      \includegraphics[width=45mm]{img/cloth_01.png}
+      \caption{cloth\_01.png}
+    \end{center}
+  \end{minipage}
+  \begin{minipage}{0.33\hsize}
+    \begin{center}
+      \includegraphics[width=45mm]{img/cloth_02.png}
+      \caption{cloth\_02.png}
+    \end{center}
+  \end{minipage}
+\end{figure}
 
-  \vspace{5mm}
+\begin{figure}[H]
+  \begin{minipage}{0.33\hsize}
+    \begin{center}
+      \includegraphics[width=45mm]{img/cloth_03.png}
+      \caption{cloth\_03.png}
+    \end{center}
+  \end{minipage}
+  \begin{minipage}{0.33\hsize}
+    \begin{center}
+      \includegraphics[width=45mm]{img/cloth_04.png}
+      \caption{cloth\_04.png}
+    \end{center}
+  \end{minipage}
+\end{figure}
 
-  \centering
-  \includegraphics[width=6cm]{./img/similarity.png}
-  \caption{Similarity Deformationの実行結果}
+\subsubsection{ball(3D)}
+\begin{figure}[H]
+  \begin{minipage}{0.33\hsize}
+    \begin{center}
+      \includegraphics[width=45mm]{img/ball_00.png}
+      \caption{ball\_00.png}
+    \end{center}
+  \end{minipage}
+  \begin{minipage}{0.33\hsize}
+    \begin{center}
+      \includegraphics[width=45mm]{img/ball_01.png}
+      \caption{ball\_01.png}
+    \end{center}
+  \end{minipage}
+  \begin{minipage}{0.33\hsize}
+    \begin{center}
+      \includegraphics[width=45mm]{img/ball_02.png}
+      \caption{ball\_02.png}
+    \end{center}
+  \end{minipage}
+\end{figure}
 
-  \vspace{5mm}
-
-  \centering
-  \includegraphics[width=6cm]{./img/rigid.png}
-  \caption{Rigid Deformationの実行結果}
+\begin{figure}[H]
+  \begin{minipage}{0.33\hsize}
+    \begin{center}
+      \includegraphics[width=45mm]{img/ball_03.png}
+      \caption{ball\_03.png}
+    \end{center}
+  \end{minipage}
+  \begin{minipage}{0.33\hsize}
+    \begin{center}
+      \includegraphics[width=45mm]{img/ball_04.png}
+      \caption{ball\_04.png}
+    \end{center}
+  \end{minipage}
 \end{figure}
 
 \end{document}

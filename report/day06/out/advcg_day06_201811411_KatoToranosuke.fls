@@ -337,16 +337,64 @@ INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/uptex-fonts/jis/upjisg-v.tfm
 INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/uptex-fonts/jis/upjisg-h.tfm
 INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/public/cm/cmitt10.tfm
 OUTPUT out/advcg_day06_201811411_KatoToranosuke.dvi
-INPUT ./img/affine.png
-INPUT ./img/affine.png
-INPUT ./img/affine.png
-INPUT extractbb -B cropbox -O ./img/affine.png
-INPUT ./img/similarity.png
-INPUT ./img/similarity.png
-INPUT ./img/similarity.png
-INPUT extractbb -B cropbox -O ./img/similarity.png
-INPUT ./img/rigid.png
-INPUT ./img/rigid.png
-INPUT ./img/rigid.png
-INPUT extractbb -B cropbox -O ./img/rigid.png
+INPUT ./img/rod_00.png
+INPUT ./img/rod_00.png
+INPUT img/rod_00.png
+INPUT extractbb -B cropbox -O img/rod_00.png
+INPUT ./img/rod_01.png
+INPUT ./img/rod_01.png
+INPUT img/rod_01.png
+INPUT extractbb -B cropbox -O img/rod_01.png
+INPUT ./img/rod_02.png
+INPUT ./img/rod_02.png
+INPUT img/rod_02.png
+INPUT extractbb -B cropbox -O img/rod_02.png
+INPUT ./img/rod_03.png
+INPUT ./img/rod_03.png
+INPUT img/rod_03.png
+INPUT extractbb -B cropbox -O img/rod_03.png
+INPUT ./img/rod_04.png
+INPUT ./img/rod_04.png
+INPUT img/rod_04.png
+INPUT extractbb -B cropbox -O img/rod_04.png
+INPUT ./img/cloth_00.png
+INPUT ./img/cloth_00.png
+INPUT img/cloth_00.png
+INPUT extractbb -B cropbox -O img/cloth_00.png
+INPUT ./img/cloth_01.png
+INPUT ./img/cloth_01.png
+INPUT img/cloth_01.png
+INPUT extractbb -B cropbox -O img/cloth_01.png
+INPUT ./img/cloth_02.png
+INPUT ./img/cloth_02.png
+INPUT img/cloth_02.png
+INPUT extractbb -B cropbox -O img/cloth_02.png
+INPUT ./img/cloth_03.png
+INPUT ./img/cloth_03.png
+INPUT img/cloth_03.png
+INPUT extractbb -B cropbox -O img/cloth_03.png
+INPUT ./img/cloth_04.png
+INPUT ./img/cloth_04.png
+INPUT img/cloth_04.png
+INPUT extractbb -B cropbox -O img/cloth_04.png
+INPUT ./img/ball_00.png
+INPUT ./img/ball_00.png
+INPUT img/ball_00.png
+INPUT extractbb -B cropbox -O img/ball_00.png
+INPUT ./img/ball_01.png
+INPUT ./img/ball_01.png
+INPUT img/ball_01.png
+INPUT extractbb -B cropbox -O img/ball_01.png
+INPUT ./img/ball_02.png
+INPUT ./img/ball_02.png
+INPUT img/ball_02.png
+INPUT extractbb -B cropbox -O img/ball_02.png
+INPUT ./img/ball_03.png
+INPUT ./img/ball_03.png
+INPUT img/ball_03.png
+INPUT extractbb -B cropbox -O img/ball_03.png
+INPUT ./img/ball_04.png
+INPUT ./img/ball_04.png
+INPUT img/ball_04.png
+INPUT extractbb -B cropbox -O img/ball_04.png
 INPUT out/advcg_day06_201811411_KatoToranosuke.aux

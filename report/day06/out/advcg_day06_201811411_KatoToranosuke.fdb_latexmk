@@ -1,10 +1,10 @@
 # Fdb version 3
-["dvipdf"] 1622919931 "out/advcg_day06_201811411_KatoToranosuke.dvi" "out/advcg_day06_201811411_KatoToranosuke.pdf" "out/advcg_day06_201811411_KatoToranosuke" 1622919936
-  "out/advcg_day06_201811411_KatoToranosuke.dvi" 1622919931 107264 fb96874f5d758e878e59fa83bf6061ee "latex"
+["dvipdf"] 1622922752 "out/advcg_day06_201811411_KatoToranosuke.dvi" "out/advcg_day06_201811411_KatoToranosuke.pdf" "out/advcg_day06_201811411_KatoToranosuke" 1622922760
+  "out/advcg_day06_201811411_KatoToranosuke.dvi" 1622922752 110316 8d1238e30000a3c046450d05155493dd "latex"
   (generated)
   "out/advcg_day06_201811411_KatoToranosuke.pdf"
-["latex"] 1622919930 "/Users/toranosuke/GoogleDrive/LectureDocument/2021/01_SpringSemester/AdvancedCG/report/day06/advcg_day06_201811411_KatoToranosuke.tex" "out/advcg_day06_201811411_KatoToranosuke.dvi" "advcg_day06_201811411_KatoToranosuke" 1622919936
-  "/Users/toranosuke/GoogleDrive/LectureDocument/2021/01_SpringSemester/AdvancedCG/report/day06/advcg_day06_201811411_KatoToranosuke.tex" 1622919928 12227 be0ca1d1ca6ed5b76b39240f2a7e5a38 ""
+["latex"] 1622922749 "/Users/toranosuke/GoogleDrive/LectureDocument/2021/01_SpringSemester/AdvancedCG/report/day06/advcg_day06_201811411_KatoToranosuke.tex" "out/advcg_day06_201811411_KatoToranosuke.dvi" "advcg_day06_201811411_KatoToranosuke" 1622922760
+  "/Users/toranosuke/GoogleDrive/LectureDocument/2021/01_SpringSemester/AdvancedCG/report/day06/advcg_day06_201811411_KatoToranosuke.tex" 1622922731 14729 ae506135185d9101eef08b6cb3b8428f ""
   "/Users/toranosuke/Library/texmf/tex/latex/jlisting.sty" 1604443947 6230 9fa8fe97d5afbd5a433990256cc4d5a3 ""
   "/usr/local/texlive/2020/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2020/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy5.tfm" 1246382020 1120 1e8878807317373affa7f7bba4cf2f6a ""
@@ -85,12 +85,24 @@
   "/usr/local/texlive/2020/texmf-dist/web2c/texmf.cnf" 1598393674 39451 15a3ebee027466ecb89701aa91dfebaf ""
   "/usr/local/texlive/2020/texmf-var/web2c/euptex/uplatex.fmt" 1603644555 2569837 227a5e52bdf349c73e6488d83c402487 ""
   "/usr/local/texlive/2020/texmf.cnf" 1586288231 577 d60164b4589a341208aff7a667fbbdcb ""
-  "advcg_day06_201811411_KatoToranosuke.tex" 1622919928 12227 be0ca1d1ca6ed5b76b39240f2a7e5a38 ""
-  "img/affine.png" 1622133066 1111058 ff5dba9a1071717f9363e800efe3f119 ""
-  "img/rigid.png" 1622133066 1042760 95170f9f1b5ff42f730b8ec3e115dff5 ""
-  "img/similarity.png" 1622133066 1098992 278663d7e1153b700befd8e8c708d136 ""
-  "out/advcg_day06_201811411_KatoToranosuke.aux" 1622919931 1892 370a938732a9b865ab60d7651a934feb "latex"
+  "advcg_day06_201811411_KatoToranosuke.tex" 1622922731 14729 ae506135185d9101eef08b6cb3b8428f ""
+  "img/ball_00.png" 1622921480 223248 aaaa6d859c2e95d5b258d114891909e1 ""
+  "img/ball_01.png" 1622921492 223077 bd5c34e7bb5fa1e3842d31fd219f027f ""
+  "img/ball_02.png" 1622921506 224186 d4e4729b00bf6ac5623aacc3aacd38a0 ""
+  "img/ball_03.png" 1622921512 227709 f2a77984312185c4eec58b88014e11cd ""
+  "img/ball_04.png" 1622921515 226274 297efe179c365ec08540614c72302ee7 ""
+  "img/cloth_00.png" 1622921166 222009 182411b8f2b347803db31dcbda9b0ae0 ""
+  "img/cloth_01.png" 1622921183 273685 b94a78c1bebf42e0d1ac241d49133480 ""
+  "img/cloth_02.png" 1622921188 285265 cb6ec89e42c1cde5dbb0c19079645144 ""
+  "img/cloth_03.png" 1622921193 266366 3865fce979345ff2e27cab9a2b088523 ""
+  "img/cloth_04.png" 1622921200 283156 90f3fca4ff30a930ccbba1f80bc5450e ""
+  "img/rod_00.png" 1622920583 195472 931dcc136c7f9375cbcb697d33c6661e ""
+  "img/rod_01.png" 1622920621 194795 1fc721afe3424dca13783342f5748339 ""
+  "img/rod_02.png" 1622920630 195569 cf44a79208b14362cbae1df882762a20 ""
+  "img/rod_03.png" 1622920637 195219 32d729adae62fc3fadad4fc9f033d768 ""
+  "img/rod_04.png" 1622920645 195000 1523fecf7018ef4204ac006d11892f08 ""
+  "out/advcg_day06_201811411_KatoToranosuke.aux" 1622922752 3533 e10a646bcb7bb8e80035d686f1a70d19 "latex"
   (generated)
-  "out/advcg_day06_201811411_KatoToranosuke.dvi"
-  "out/advcg_day06_201811411_KatoToranosuke.aux"
   "out/advcg_day06_201811411_KatoToranosuke.log"
+  "out/advcg_day06_201811411_KatoToranosuke.aux"
+  "out/advcg_day06_201811411_KatoToranosuke.dvi"
