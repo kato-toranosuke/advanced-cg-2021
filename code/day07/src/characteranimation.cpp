@@ -973,6 +973,11 @@ int CharacterAnimation::skinningDQS(vector<glm::vec3> &vrts, const vector<map<in
 
 		// ----課題ここから----
 		// 頂点vに対応する全ジョイントにおけるループ
+		DualQuaternion dqi;
+		// 初期化
+		dqi.m_real = glm::quat(0, 0, 0, 0);
+		dqi.m_dual = glm::quat(0, 0, 0, 0);
+
 		map<int, double>::const_iterator itr = weights[i].begin();
 		for (; itr != weights[i].end(); ++itr)
 		{
@@ -980,8 +985,32 @@ int CharacterAnimation::skinningDQS(vector<glm::vec3> &vrts, const vector<map<in
 			float wij = static_cast<float>(itr->second); // 重み
 
 			// 正則判定
-				}
+			if (glm::determinant(m_joints[j].B) < glm::epsilon<float>())
+				continue;
+			glm::mat4 M = m_joints[j].W * glm::inverse(m_joints[j].B); // Wj*Bj^-1
 
+			// 回転成分を表す四元数qjを取り出す。
+			glm::quat qj(M);
+			glm::normalize(qj); //単位四元数を得るため
+
+			// 平行移動成分tjを取り出す。
+			glm::vec3 tj(M[3]); // これBから取り出すかもしれない
+
+			// qj, tjからDual Quaternionを計算
+			DualQuaternion dqj(qj, tj);
+
+			// 重みwijで頂点vに対応する全ジョイントのdqjを線形合成dqiを計算。
+			dqi += wij * dqj;
+		}
+		dqi.normalize(); // 正規化
+
+		// real, dual partの取り出し
+		glm::quat qr = dqi.m_real;
+		glm::quat qd = dqi.m_dual;
+
+		glm::quat q = qr * glm::quat(0.0f, v) * glm::conjugate(qr) + 2.0f * qd * glm::conjugate(qr);
+		// 四元数からベクトル部を取り出す
+		v_new = glm::vec3(q.x, q.y, q.z);
 		// ----課題ここまで----
 
 		vrts[i] = glm::vec3(v_new[0], v_new[1], v_new[2]);
