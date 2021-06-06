@@ -11,7 +11,7 @@ INCLUDE = -I../../include -I./imgui
 
 # 生成バイナリファイル名＆ディレクトリ
 TARGETS = advanced06
-TARGETDIR = ../../bin
+TARGETDIR = ../bin
 
 # ソースファイルの場所(サブフォルダも走査して*.cppファイルをリスト化)
 SRCROOT   = .
